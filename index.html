@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<!--
+  [CSP] 配信サーバー側で以下の HTTP ヘッダーを設定してください:
+  Content-Security-Policy: default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'none'; frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+-->
+<title>記事一覧 — Co-Generative Agility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" crossorigin>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --text: #1c1917;
+    --text-secondary: #57534e;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --border: #e7e5e4;
+    --card-bg: #ffffff;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+  header {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 2rem;
+  }
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+  .articles {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .article-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .article-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: var(--accent);
+  }
+  .article-card h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+  .article-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+  .tag {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.15em 0.6em;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+  }
+  footer {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Co-Generative Agility</h1>
+  <p>システム思考とアジャイルに関する記事</p>
+</header>
+
+<main class="articles">
+  <a class="article-card" href="dead-development.html">
+    <span class="tag">システム原型</span>
+    <h2>アジャイル導入が開発現場を殺すとき——システム原型で読み解く7つの死の螺旋</h2>
+    <p>アジャイル導入でよく起きる7つの失敗パターンを、システム思考の「原型」を使って構造的に読み解きます。応急処置の失敗、問題のすり替わり、目標のなし崩しなど、現場で繰り返される悪循環の正体とレバレッジポイントを探ります。</p>
+  </a>
+
+  <a class="article-card" href="system-thinking.html">
+    <span class="tag">システム思考</span>
+    <h2>システム思考の原型カタログ</h2>
+    <p>システム思考で頻出する原型（アーキタイプ）をカタログ形式でまとめました。応急処置の失敗、問題のすり替わり、目標のなし崩し、成長の限界など、複雑な問題の構造パターンを図解とともに解説します。</p>
+  </a>
+</main>
+
+<footer>
+  &copy; 2026 Co-Generative Agility
+</footer>
+
+</body>
+</html>
