@@ -1,0 +1,2656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アジャイル導入が開発現場を殺すとき——システム原型で読み解く7つの死の螺旋</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+
+  :root {
+    --bg: #fafaf9;
+    --text: #1c1917;
+    --text-secondary: #57534e;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --border: #e7e5e4;
+    --card-bg: #ffffff;
+    --pm-color: #2563eb;
+    --reviewer-color: #059669;
+    --lead-color: #7c3aed;
+    --insight-bg: #fffbeb;
+    --insight-border: #f59e0b;
+    --code-bg: #f5f5f4;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 16px;
+  }
+  .container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #fff;
+    padding: 64px 0 56px;
+  }
+  header .container { text-align: center; }
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  header .subtitle {
+    font-size: 15px;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+  header .meta {
+    margin-top: 24px;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  /* Article */
+  article { padding: 48px 0 80px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 48px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--text);
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 36px 0 14px;
+    color: var(--text);
+  }
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 28px 0 12px;
+    color: var(--text);
+  }
+  p { margin-bottom: 16px; }
+  ul, ol { margin: 0 0 16px 24px; }
+  li { margin-bottom: 6px; }
+
+  /* Diagram container */
+  .diagram {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  /* SVG diagram */
+  .diagram svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Table */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 16px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .code-block-header {
+    background: #e7e5e4;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .code-block-lang {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .code-block-content {
+    padding: 20px;
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .code-block-content pre {
+    margin: 0;
+    white-space: pre;
+  }
+  .code-block-content code {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+  }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid #cbd5e1;
+    padding: 8px 20px;
+    margin: 16px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Links */
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s;
+  }
+  a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  /* Material Symbols Outlined */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.2em;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Separator */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin: 32px 0;
+    box-shadow: var(--shadow);
+  }
+  .toc-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  .toc > ol > li {
+    counter-increment: toc;
+    margin-bottom: 4px;
+  }
+  .toc > ol > li::before {
+    content: counter(toc) ".";
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+  .toc > ol > li > ol {
+    margin: 2px 0 6px 24px;
+    counter-reset: toc-sub;
+  }
+  .toc > ol > li > ol > li {
+    counter-increment: toc-sub;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  .toc > ol > li > ol > li::before {
+    content: counter(toc-sub) ".";
+    color: var(--text-secondary);
+    margin-right: 4px;
+  }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  /* Mermaid diagram */
+  .mermaid-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .mermaid-wrapper .diagram-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* SVG embed */
+  .svg-embed {
+    margin: 32px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .svg-embed svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Footer */
+  footer {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .card-header.pm { color: var(--pm-color); }
+  .card-header.reviewer { color: var(--reviewer-color); }
+  .card p { font-size: 14px; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul { font-size: 14px; margin: 0 0 8px 20px; padding: 0; }
+  .card li { margin-bottom: 4px; }
+  .card ul:last-child { margin-bottom: 0; }
+  .insight {
+    background: var(--insight-bg);
+    border-left: 4px solid var(--insight-border);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .insight-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--insight-border);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .insight p:last-child { margin-bottom: 0; }
+  .proscons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 640px) { .proscons-grid { grid-template-columns: 1fr; } }
+  .proscons-card {
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .proscons-card.pros {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+  .proscons-card.cons {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .proscons-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .proscons-header.pros { color: #16a34a; }
+  .proscons-header.cons { color: #dc2626; }
+  .proscons-card ul { margin: 0 0 0 20px; }
+  .proscons-card li { font-size: 14px; margin-bottom: 6px; }
+  .proscons-card li:last-child { margin-bottom: 0; }
+  .proscons-card p { font-size: 14px; margin-bottom: 8px; }
+  .proscons-card p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>アジャイル導入が開発現場を殺すとき——システム原型で読み解く7つの死の螺旋</h1>
+    
+    <p class="meta">2026-02-23</p>
+  </div>
+</header>
+
+<article>
+<div class="container">
+<nav class="toc">
+<p class="toc-title">目次</p>
+<ol>
+<li><a href="#応急処置の失敗-「うまくいかない？-じゃあ会議を増やそう」">応急処置の失敗——「うまくいかない？ じゃあ会議を増やそう」</a>
+<ol>
+<li><a href="#ループを読み解く">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#問題のすり替わり-「フレームワークを入れれば大丈夫」">問題のすり替わり——「フレームワークを入れれば大丈夫」</a>
+<ol>
+<li><a href="#ループを読み解く-1">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-1">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#目標のなし崩し-「今回だけ」が標準になる日">目標のなし崩し——「今回だけ」が標準になる日</a>
+<ol>
+<li><a href="#ループを読み解く-2">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-2">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#成長と投資不足-「アジャイルなんてこんなものだよ」">成長と投資不足——「アジャイルなんてこんなものだよ」</a>
+<ol>
+<li><a href="#ループを読み解く-3">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-3">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#エスカレーション-チームの自律-vs-マネジメントの管理、終わりなき軍拡競争">エスカレーション——チームの自律 vs マネジメントの管理、終わりなき軍拡競争</a>
+<ol>
+<li><a href="#ループを読み解く-4">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-4">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#強者はますます強く-パイロットチームに全てが集まり、他は飢える">強者はますます強く——パイロットチームに全てが集まり、他は飢える</a>
+<ol>
+<li><a href="#ループを読み解く-5">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-5">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#共有地の悲劇-各チームの局所最適がコードベースを荒廃させる">共有地の悲劇——各チームの局所最適がコードベースを荒廃させる</a>
+<ol>
+<li><a href="#ループを読み解く-6">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-6">段階的に進行する症状</a></li>
+</ol></li>
+</ol>
+</nav>
+
+<h2 id="応急処置の失敗-「うまくいかない？-じゃあ会議を増やそう」">応急処置の失敗——「うまくいかない？ じゃあ会議を増やそう」</h2>
+
+<div class="diagram">
+  <div class="diagram-title">プロセス追加の悪循環——会議が増えるほど開発が止まる</div>
+  <svg viewBox="0 0 760 540" xmlns="http://www.w3.org/2000/svg" style="max-width:720px; --dur: 12s;">
+<defs>
+  <marker id="ftf-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#94a3b8"/>
+  </marker>
+  <marker id="ftf-barr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="ftf-rarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+
+  <mask id="dash-mask">
+    <path d="M 240 348 C 120 348, 180 250, 180 136" fill="none" stroke="white" stroke-width="6" class="mask-draw" />
+  </mask>
+</defs>
+
+<style>
+  /* 1. 問題の発生と悪化（スケール・色変化） */
+  .box-problem { transform-origin: 180px 108px; animation: box-p var(--dur) infinite; }
+  .prob-rect { animation: prob-rect-anim var(--dur) infinite; }
+
+  @keyframes box-p {
+    0%, 74% { transform: scale(1); opacity: 1; }
+    75%, 90% { transform: scale(1.05); opacity: 1; } /* 悪化して肥大化 */
+    95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes prob-rect-anim {
+    0%, 74% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    75%, 90% { fill: #fee2e2; stroke: #b91c1c; stroke-width: 4; } /* 警告色 */
+    95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* 2. 問題 -> 応急処置への矢印（速い） */
+  .path-1 { stroke-dasharray: 600; animation: d-1 var(--dur) infinite; }
+  @keyframes d-1 {
+    0%, 9% { stroke-dashoffset: 600; opacity: 0; }
+    10% { opacity: 1; stroke-dashoffset: 600; }
+    15%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 3. 応急処置ボックスの出現 */
+  .show-15 { animation: s-15 var(--dur) infinite; opacity: 0; }
+  @keyframes s-15 {
+    0%, 14% { opacity: 0; transform: translateY(10px); }
+    15%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 4. 応急処置 -> 問題への矢印（速い） */
+  .path-2 { stroke-dasharray: 600; animation: d-2 var(--dur) infinite; }
+  @keyframes d-2 {
+    0%, 24% { stroke-dashoffset: 600; opacity: 0; }
+    25% { opacity: 1; stroke-dashoffset: 600; }
+    30%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 5. バランシングループ（B）の出現 */
+  .show-30 { transform-origin: 380px 108px; animation: s-30 var(--dur) infinite; opacity: 0; }
+  @keyframes s-30 {
+    0%, 29% { opacity: 0; transform: scale(0.5); }
+    30%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 6. 応急処置 -> 意図せぬ結果への矢印 */
+  .path-3 { stroke-dasharray: 600; animation: d-3 var(--dur) infinite; }
+  @keyframes d-3 {
+    0%, 39% { stroke-dashoffset: 600; opacity: 0; }
+    40% { opacity: 1; stroke-dashoffset: 600; }
+    45%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 7. 意図せぬ結果ボックスの出現 */
+  .show-45 { animation: s-45 var(--dur) infinite; opacity: 0; }
+  @keyframes s-45 {
+    0%, 44% { opacity: 0; transform: translateY(10px); }
+    45%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 8. 遅延マークの点滅表示 */
+  .show-50 { animation: s-50 var(--dur) infinite; opacity: 0; }
+  .delay-line { animation: s-50-line var(--dur) infinite; }
+  @keyframes s-50 {
+    0%, 49% { opacity: 0; }
+    50%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes s-50-line {
+    50%, 55% { stroke-width: 4; stroke: #ef4444; }
+    56%, 100% { stroke-width: 2.5; stroke: #7c3aed; }
+  }
+
+  /* 9. 意図せぬ結果 -> 問題への矢印（遅延を表現するためゆっくり描画） */
+  .mask-draw { stroke-dasharray: 600; animation: d-mask var(--dur) infinite; }
+  @keyframes d-mask {
+    0%, 59% { stroke-dashoffset: 600; }
+    75%, 100% { stroke-dashoffset: 0; }
+  }
+  .path-4 { mask: url(#dash-mask); animation: p-4 var(--dur) infinite; }
+  @keyframes p-4 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 10. 自己強化ループ（R）の出現 */
+  .show-75 { transform-origin: 380px 240px; animation: s-75 var(--dur) infinite; opacity: 0; }
+  @keyframes s-75 {
+    0%, 74% { opacity: 0; transform: scale(0.5); }
+    75%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 11. オプションテキストの出現 */
+  .show-80 { animation: s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<g class="box-problem">
+  <rect class="prob-rect" x="40" y="80" width="280" height="56" rx="10" />
+  <text x="180" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">問題の症状</text>
+  <text x="180" y="120" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">アジャイル導入後も成果が出ない（遅延・品質低下）</text>
+</g>
+
+<g class="path-1">
+  <path d="M 300 80 C 340 30, 420 30, 460 80" fill="none" stroke="#94a3b8" stroke-width="1.8" marker-end="url(#ftf-arr)"/>
+</g>
+
+<g class="show-15">
+  <rect x="440" y="80" width="280" height="56" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="580" y="102" text-anchor="middle" font-size="11" font-weight="700" fill="#b45309" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">応急処置（管理の強化）</text>
+  <text x="580" y="120" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">ステータス会議・承認プロセス・レポートを追加する</text>
+  <text x="380" y="45" text-anchor="middle" font-size="16" font-weight="700" fill="#475569" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<g class="path-2">
+  <path d="M 460 136 C 420 186, 340 186, 300 136" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ftf-barr)"/>
+</g>
+
+<g class="show-30">
+  <circle cx="380" cy="108" r="18" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="380" y="114" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+  <text x="380" y="175" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<g class="path-3">
+  <path d="M 580 136 C 580 250, 620 348, 520 348" fill="none" stroke="#94a3b8" stroke-width="1.8" marker-end="url(#ftf-arr)"/>
+</g>
+
+<g class="show-45">
+  <rect x="240" y="320" width="280" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="380" y="342" text-anchor="middle" font-size="11" font-weight="700" fill="#6d28d9" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">意図せぬ副作用</text>
+  <text x="380" y="360" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームの自律性と開発時間がさらに奪われる</text>
+  <text x="595" y="260" text-anchor="middle" font-size="16" font-weight="700" fill="#475569" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<g class="show-50">
+  <line class="delay-line" x1="140" y1="270" x2="160" y2="255" />
+  <line class="delay-line" x1="147" y1="278" x2="167" y2="263" />
+  <text x="175" y="270" text-anchor="start" font-size="10" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif" stroke="none">数スプリント〜数ヶ月</text>
+</g>
+
+<g class="path-4">
+  <path d="M 240 348 C 120 348, 180 250, 180 136" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#ftf-rarr)"/>
+</g>
+
+<g class="show-75">
+  <circle cx="380" cy="240" r="18" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="380" y="246" text-anchor="middle" font-size="14" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+  <text x="140" y="220" text-anchor="middle" font-size="16" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<g class="show-80">
+  <rect x="130" y="470" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="493" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">管理を強化するほどチームの自律性が奪われ、アジャイルが本来生み出すはずの成果がさらに遠のく</text>
+</g>
+<g class="show-80">
+  <rect x="240" y="410" width="280" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="433" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">会議やプロセスを足す前に「なぜ成果が出ないか」の根本原因を探る</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く">ループを読み解く</h3>
+
+<h4 id="b-ループ（短期的な安心感）">B ループ（短期的な安心感）</h4>
+
+<p>アジャイルの成果が見えない → マネジメントが不安を感じる → ステータス会議・進捗レポート・承認プロセスを追加する → 「状況が見えるようになった」と安心する → 問題が解決したように見える</p>
+
+<p>このバランスループは即座に効く。デイリースクラムに加えて週次の進捗報告会を設ければ、マネジメントは「何が起きているか把握できている」という安心感を得る。スプリントレビューにステークホルダー全員を集めてパワーポイントで報告させれば、「アジャイルをちゃんとやっている」感が出る。だからこそ、この処方箋は何度でも繰り返される。</p>
+
+<h4 id="r-ループ（長期的な悪化）">R ループ（長期的な悪化）</h4>
+
+<p>会議・レポート・承認プロセスが増える → チームの開発時間が圧迫される → <strong>自律的に判断し行動する余地が消える</strong> → 開発スピードと品質がさらに低下する → 「やっぱりアジャイルはうまくいかない」とマネジメントが判断する → さらにプロセスと管理を追加する</p>
+
+<p>ここに<strong>遅延</strong>がある。プロセスを1つ追加しても、すぐに開発速度が落ちるわけではない。チームは最初、「まあこれくらいなら」と吸収する。しかし数スプリントかけて会議が3つ、4つと積み重なると、ある日「スプリントの半分が会議で潰れている」という現実に気づく。そのとき追加された会議の1つ1つは、それぞれ合理的な理由があった。問題は個々の会議ではなく、<strong>積み重なった構造</strong>なのだ。</p>
+
+<h3 id="段階的に進行する症状">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 善意の介入</div>
+<ul><li>アジャイル導入後、最初の数スプリントで目に見える成果が出ない</li><li>マネジメントが「状況を把握したい」と週次ステータス会議を設ける</li><li>デイリースクラムが15分を超え、マネージャーへの報告会になる</li><li>チームは「まだ立ち上がりの時期だから仕方ない」と受け入れる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 管理の層が厚くなる</div>
+<ul><li>スプリントレビューにパワーポイント資料が求められるようになる</li><li>タスクの着手にマネージャーの承認が必要になる</li><li>レトロスペクティブの改善項目に「上への報告」が追加される</li><li>「アジャイルってこんなに会議が多いものなの？」と新人が疑問を持つ</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 形骸化したアジャイル</div>
+<ul><li>スクラムイベントは全て実施しているが、形式的な儀式と化している</li><li>チームは指示を待ち、自ら動かなくなる</li><li>ベロシティが初期の半分以下に落ちる</li><li>「アジャイルは機能していない」という声がマネジメント層に広がる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: アジャイルの名を冠したウォーターフォール</div>
+<ul><li>スプリント計画がマネジメント主導の作業割り当てになる</li><li>全てのイベントが報告と承認の場に変質する</li><li>チームメンバーが受け身になり、改善提案を出さなくなる</li><li>「やっぱりウォーターフォールに戻そう」という議論が始まる</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>応急処置の失敗に対するレバレッジは、「見えないから管理を強化する」のではなく、<strong>なぜ見えないのかを問う</strong>ことにあります。プロダクトバックログの透明性は十分ですか？ スプリントゴールは明確ですか？ チームに障害を自力で除去する権限がありますか？ プロセスを足す前に、すでにあるスクラムのフレームワークが本来の機能を果たしているかを点検することが先決です。追加すべきは会議ではなく、チームの自律性と心理的安全性です。</p>
+</div>
+
+<h2 id="問題のすり替わり-「フレームワークを入れれば大丈夫」">問題のすり替わり——「フレームワークを入れれば大丈夫」</h2>
+
+<div class="diagram">
+  <div class="diagram-title">フレームワーク依存の中毒——問題のすり替わり</div>
+  <svg viewBox="0 0 760 580" xmlns="http://www.w3.org/2000/svg" style="max-width:720px; --dur: 12s;">
+<defs>
+  <marker id="stb-q-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#d97706"/>
+  </marker>
+  <marker id="stb-f-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="stb-s-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+
+  <mask id="stb-delay-mask">
+    <path d="M 320 380 C 280 350, 280 310, 320 276" fill="none" stroke="white" stroke-width="6" class="stb-mask-draw" />
+  </mask>
+</defs>
+
+<style>
+  /* タイトル */
+  .stb-title { animation: stb-title var(--dur) infinite; }
+  @keyframes stb-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 1. 問題ボックス（常時表示、Rループ完成時に強調） */
+  .box-problem { transform-origin: 360px 248px; animation: stb-box-p var(--dur) infinite; }
+  .prob-rect { animation: stb-prob-rect var(--dur) infinite; }
+
+  @keyframes stb-box-p {
+    0%, 69% { transform: scale(1); opacity: 1; }
+    70%, 85% { transform: scale(1.05); opacity: 1; } /* 中毒で悪化 */
+    90% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes stb-prob-rect {
+    0%, 69% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    70%, 85% { fill: #fee2e2; stroke: #b91c1c; stroke-width: 4; } /* 警告色 */
+    90%, 95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* 2. 問題 → 応急処置への矢印 */
+  .stb-path-1 { stroke-dasharray: 600; animation: stb-d-1 var(--dur) infinite; }
+  @keyframes stb-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 3. 応急処置ボックスの出現 */
+  .stb-show-10 { animation: stb-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 4. 応急処置 → 問題への矢印（上Bループ完成） */
+  .stb-path-2 { stroke-dasharray: 600; animation: stb-d-2 var(--dur) infinite; }
+  @keyframes stb-d-2 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 5. 上バランシングループ（B）の出現 */
+  .stb-show-20 { transform-origin: 360px 168px; animation: stb-s-20 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-20 {
+    0%, 19% { opacity: 0; transform: scale(0.5); }
+    20%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 6. 問題 → 根本解決への矢印 */
+  .stb-path-3 { stroke-dasharray: 600; animation: stb-d-3 var(--dur) infinite; }
+  @keyframes stb-d-3 {
+    0%, 24% { stroke-dashoffset: 600; opacity: 0; }
+    25% { opacity: 1; stroke-dashoffset: 600; }
+    30%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 7. 根本解決ボックスの出現 */
+  .stb-show-30 { animation: stb-s-30 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-30 {
+    0%, 29% { opacity: 0; transform: translateY(10px); }
+    30%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 8. 根本解決 → 問題への矢印（遅延表現のためマスクでゆっくり描画） */
+  .stb-mask-draw { stroke-dasharray: 600; animation: stb-d-mask var(--dur) infinite; }
+  @keyframes stb-d-mask {
+    0%, 34% { stroke-dashoffset: 600; }
+    50%, 100% { stroke-dashoffset: 0; }
+  }
+  .stb-path-4 { mask: url(#stb-delay-mask); animation: stb-p-4 var(--dur) infinite; }
+  @keyframes stb-p-4 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 9. 遅延マークの出現 */
+  .stb-show-35 { animation: stb-s-35 var(--dur) infinite; opacity: 0; }
+  .stb-delay-line { animation: stb-dl var(--dur) infinite; }
+  @keyframes stb-s-35 {
+    0%, 34% { opacity: 0; }
+    35%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes stb-dl {
+    35%, 40% { stroke-width: 4; stroke: #ef4444; }
+    41%, 100% { stroke-width: 2.5; stroke: #2563eb; }
+  }
+
+  /* 10. 下バランシングループ（B）の出現 */
+  .stb-show-45 { transform-origin: 360px 328px; animation: stb-s-45 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-45 {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 11. 応急処置 → 副作用への矢印 */
+  .stb-path-5 { stroke-dasharray: 600; animation: stb-d-5 var(--dur) infinite; }
+  @keyframes stb-d-5 {
+    0%, 49% { stroke-dashoffset: 600; opacity: 0; }
+    50% { opacity: 1; stroke-dashoffset: 600; }
+    55%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 12. 副作用ボックスの出現 */
+  .stb-show-55 { animation: stb-s-55 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-55 {
+    0%, 54% { opacity: 0; transform: translateY(10px); }
+    55%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 13. 副作用 → 根本解決への矢印 */
+  .stb-path-6 { stroke-dasharray: 600; animation: stb-d-6 var(--dur) infinite; }
+  @keyframes stb-d-6 {
+    0%, 59% { stroke-dashoffset: 600; opacity: 0; }
+    60% { opacity: 1; stroke-dashoffset: 600; }
+    65%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 14. 自己強化ループ（R）の出現 */
+  .stb-show-65 { transform-origin: 510px 248px; animation: stb-s-65 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-65 {
+    0%, 64% { opacity: 0; transform: scale(0.5); }
+    65%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 15. オプションテキストの出現 */
+  .stb-show-75 { animation: stb-s-75 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-75 {
+    0%, 74% { opacity: 0; transform: translateY(5px); }
+    75%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="stb-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">フレームワーク依存の中毒——問題のすり替わり</text>
+
+<!-- 1. 問題ボックス -->
+<g class="box-problem">
+  <rect class="prob-rect" x="240" y="220" width="240" height="56" rx="10" />
+  <text x="360" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">問題の症状</text>
+  <text x="360" y="260" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">アジャイルの導入・定着がうまくいかない</text>
+</g>
+
+<!-- 2. 問題 → 応急処置パス -->
+<g class="stb-path-1">
+  <path d="M 400 220 C 440 180, 440 140, 400 116" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#stb-q-arr)"/>
+</g>
+
+<!-- 3. 応急処置ボックス + 極性「+」 -->
+<g class="stb-show-10">
+  <rect x="240" y="60" width="240" height="56" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">対症療法（フレームワーク導入）</text>
+  <text x="360" y="100" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">スケーリングフレームワークやツールを導入する</text>
+  <text x="435" y="172" text-anchor="middle" font-size="16" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 4. 応急処置 → 問題パス -->
+<g class="stb-path-2">
+  <path d="M 320 116 C 280 140, 280 180, 320 220" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#stb-q-arr)"/>
+</g>
+
+<!-- 5. 上Bループ + 極性「−」 -->
+<g class="stb-show-20">
+  <circle cx="360" cy="168" r="16" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+  <text x="285" y="172" text-anchor="middle" font-size="18" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 6. 問題 → 根本解決パス -->
+<g class="stb-path-3">
+  <path d="M 400 276 C 440 310, 440 350, 400 380" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#stb-f-arr)"/>
+</g>
+
+<!-- 7. 根本解決ボックス + 極性「+」 -->
+<g class="stb-show-30">
+  <rect x="240" y="380" width="240" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="402" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">根本的な解決策（内部能力の構築）</text>
+  <text x="360" y="420" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織文化・マインドセット・技術力を地道に育てる</text>
+  <text x="435" y="332" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 8. 根本解決 → 問題パス（遅延、マスク描画） -->
+<g class="stb-path-4">
+  <path d="M 320 380 C 280 350, 280 310, 320 276" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#stb-f-arr)"/>
+</g>
+
+<!-- 9. 遅延マーク + 極性「−」 -->
+<g class="stb-show-35">
+  <line class="stb-delay-line" x1="282" y1="336" x2="302" y2="321" />
+  <line class="stb-delay-line" x1="289" y1="344" x2="309" y2="329" />
+  <text x="240" y="336" text-anchor="end" font-size="10" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">数ヶ月〜数年</text>
+  <text x="285" y="332" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 10. 下Bループ -->
+<g class="stb-show-45">
+  <circle cx="360" cy="328" r="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="333" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- 11. 応急処置 → 副作用パス -->
+<g class="stb-path-5">
+  <path d="M 480 88 C 640 88, 640 160, 640 220" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#stb-s-arr)"/>
+</g>
+
+<!-- 12. 副作用ボックス + 極性「+」 -->
+<g class="stb-show-55">
+  <rect x="540" y="220" width="200" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="640" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">副作用（能力の萎縮）</text>
+  <text x="640" y="260" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">フレームワーク依存で自ら考える力が萎縮する</text>
+  <text x="655" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 13. 副作用 → 根本解決パス -->
+<g class="stb-path-6">
+  <path d="M 640 276 C 640 360, 560 408, 480 408" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#stb-s-arr)"/>
+</g>
+
+<!-- 14. Rループ + 極性「−」 -->
+<g class="stb-show-65">
+  <circle cx="510" cy="248" r="18" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="510" y="254" text-anchor="middle" font-size="14" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+  <text x="655" y="360" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<g class="stb-show-75">
+  <rect x="130" y="470" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="493" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">フレームワークに頼るほど自ら考える力が衰え、根本的な組織変革がさらに困難になる</text>
+</g>
+<g class="stb-show-75">
+  <rect x="130" y="520" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="543" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">フレームワークは「補助輪」であり、外す日を最初から計画する</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-1">ループを読み解く</h3>
+
+<h4 id="b-ループ上段（対症療法の誘惑）">B ループ上段（対症療法の誘惑）</h4>
+
+<p>アジャイルの導入がうまくいかない → 「何をすればいいかわからない」 → スケーリングフレームワーク（SAFe等）を導入する → 役割・会議・成果物が明確に定義される → 「何をすべきかわかった」と安心する</p>
+
+<p>このループの魅力は強烈だ。フレームワークは明確な答えを与えてくれる。誰が何の会議にいつ出席し、何を成果物として出すのか。すべてが定義されている。「自分たちで考えて、自分たちで決める」という曖昧さに耐えなくて済む。日本の組織文化では特に、<strong>定義されたプロセスへの信頼</strong>が強い。だからこそフレームワーク導入は強い吸引力を持つ。</p>
+
+<h4 id="b-ループ下段（根本解決への道）">B ループ下段（根本解決への道）</h4>
+
+<p>アジャイルがうまくいかない → 組織文化を変え、心理的安全性を高め、技術的卓越性を磨く → チームが自律的に判断・改善できるようになる → アジャイルが機能し始める</p>
+
+<p>こちらのバランスループには<strong>遅延</strong>がある。文化を変えるには年単位の時間がかかる。心理的安全性は一朝一夕に構築できない。技術的卓越性は地道な学習と実践の積み重ねだ。「フレームワークを入れれば来月から変わる」と「文化を変えるには2年かかる」——経営層がどちらを選ぶかは明白だ。</p>
+
+<h4 id="r-ループ（中毒の構造）">R ループ（中毒の構造）</h4>
+
+<p>フレームワークに依存する → チームが「フレームワークの手順に従う」ことをアジャイルだと誤解する → <strong>自分たちで考え、適応する能力が萎縮する</strong>（副作用） → フレームワークが想定しない状況に対処できなくなる → 「もっとフレームワークのガイダンスが必要だ」とさらに依存を深める</p>
+
+<p>これが「カーゴカルト・アジャイル」と呼ばれる構造だ。形式を真似れば結果がついてくるという信仰。レトロスペクティブを毎スプリントやっているが改善は一つも実行されない。ベロシティを計測しているがそれが何を意味するか誰も説明できない。<strong>儀式はあるが魂がない</strong>——フレームワーク依存の末路だ。</p>
+
+<h3 id="段階的に進行する症状-1">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 救世主の到来</div>
+<ul><li>「SAFeを導入すればスケールできる」と経営層が決定する</li><li>外部コンサルタントが組織にロール定義と会議体を設計する</li><li>「やるべきことが明確になった」とチームが安心する</li><li>高額なトレーニングとツールへの投資が承認される</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 手順の遵守</div>
+<ul><li>チームは忠実にフレームワークのプロセスに従う</li><li>「このケースはフレームワークのどこに書いてある？」が口癖になる</li><li>自分たちの文脈に合わない手順もそのまま実行する</li><li>外部コンサルタントなしでは判断できない場面が増える</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 思考停止</div>
+<ul><li>「フレームワークに書いてないからやらない」という判断が常態化する</li><li>チーム独自の改善案が出なくなる</li><li>現場の違和感を「フレームワークが正しい、自分たちが間違っている」と解釈する</li><li>コンサルタント契約が終了すると途端に混乱が始まる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 形骸化の完成</div>
+<ul><li>フレームワークの儀式は全て実行しているが何も変わらない</li><li>「アジャイルなんて結局ただの手続きだ」とチームが幻滅する</li><li>次のフレームワークや方法論を探し始める（依存先の乗り換え）</li><li>組織の内部能力はフレームワーク導入前より低下している</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>問題のすり替わりに対するレバレッジは、フレームワークを捨てることではありません。<strong>フレームワークを「補助輪」として位置づける</strong>ことです。導入時から「いつ、どの部分を自分たちのやり方に置き換えるか」を計画し、スプリントごとにチームの自律度を高めていく。「このプラクティスはなぜやるのか？」を問い続けることで、形式への依存ではなく、原理の理解に基づいた実践へと移行できます。</p>
+</div>
+
+<h2 id="目標のなし崩し-「今回だけ」が標準になる日">目標のなし崩し——「今回だけ」が標準になる日</h2>
+
+<div class="diagram">
+  <div class="diagram-title">品質基準の侵食——「今回だけ」が永遠になる</div>
+  <svg viewBox="0 0 760 540" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="dg-goal-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#d97706"/>
+  </marker>
+  <marker id="dg-gap-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="dg-sta-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+  <marker id="dg-act-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+
+  <mask id="dg-delay-mask">
+    <path d="M 280 368 C 130 368, 130 310, 130 266" fill="none" stroke="white" stroke-width="6" class="dg-mask-draw" />
+  </mask>
+</defs>
+
+<style>
+  /* タイトル */
+  .dg-title { animation: dg-title var(--dur) infinite; }
+  @keyframes dg-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 目標ボックス（強調アニメーション付き） */
+  .dg-box-goal { transform-origin: 380px 88px; animation: dg-box-g var(--dur) infinite; }
+  .dg-goal-rect { animation: dg-goal-rect-anim var(--dur) infinite; }
+
+  @keyframes dg-box-g {
+    0%, 64% { transform: scale(1); opacity: 1; }
+    65%, 80% { transform: scale(1.03); opacity: 1; }
+    85%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes dg-goal-rect-anim {
+    0%, 64% { fill: #fffbeb; stroke: #d97706; stroke-width: 2; }
+    65%, 80% { fill: #fde68a; stroke: #b45309; stroke-width: 3; }
+    85%, 95% { fill: #fffbeb; stroke: #d97706; stroke-width: 2; }
+    100% { fill: #fffbeb; }
+  }
+
+  /* path-1: 目標→ギャップ (5-10%) */
+  .dg-path-1 { stroke-dasharray: 600; animation: dg-d-1 var(--dur) infinite; }
+  @keyframes dg-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ギャップボックス出現 (10%) */
+  .dg-show-10 { animation: dg-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes dg-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 現状ボックス出現 (12%) */
+  .dg-show-12 { animation: dg-s-12 var(--dur) infinite; opacity: 0; }
+  @keyframes dg-s-12 {
+    0%, 11% { opacity: 0; transform: translateY(10px); }
+    12%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: 現状→ギャップ (12-17%) */
+  .dg-path-2 { stroke-dasharray: 600; animation: dg-d-2 var(--dur) infinite; }
+  @keyframes dg-d-2 {
+    0%, 11% { stroke-dashoffset: 600; opacity: 0; }
+    12% { opacity: 1; stroke-dashoffset: 600; }
+    17%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: ギャップ→目標 (20-28%) */
+  .dg-path-3 { stroke-dasharray: 600; animation: dg-d-3 var(--dur) infinite; }
+  @keyframes dg-d-3 {
+    0%, 19% { stroke-dashoffset: 600; opacity: 0; }
+    20% { opacity: 1; stroke-dashoffset: 600; }
+    28%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 上B-loopラベル出現 (28%) */
+  .dg-show-28 { transform-origin: 490px 158px; animation: dg-s-28 var(--dur) infinite; opacity: 0; }
+  @keyframes dg-s-28 {
+    0%, 27% { opacity: 0; transform: scale(0.5); }
+    28%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: ギャップ→改善行動 (33-38%) */
+  .dg-path-4 { stroke-dasharray: 600; animation: dg-d-4 var(--dur) infinite; }
+  @keyframes dg-d-4 {
+    0%, 32% { stroke-dashoffset: 600; opacity: 0; }
+    33% { opacity: 1; stroke-dashoffset: 600; }
+    38%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 改善行動ボックス出現 (38%) */
+  .dg-show-38 { animation: dg-s-38 var(--dur) infinite; opacity: 0; }
+  @keyframes dg-s-38 {
+    0%, 37% { opacity: 0; transform: translateY(10px); }
+    38%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-5: 遅延パス（マスクベース描画 42-55%） */
+  .dg-mask-draw { stroke-dasharray: 600; animation: dg-d-mask var(--dur) infinite; }
+  @keyframes dg-d-mask {
+    0%, 41% { stroke-dashoffset: 600; }
+    58%, 100% { stroke-dashoffset: 0; }
+  }
+  .dg-path-5 { mask: url(#dg-delay-mask); animation: dg-p-5 var(--dur) infinite; }
+  @keyframes dg-p-5 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延マーク出現 (50%) + 赤フラッシュ */
+  .dg-show-50 { animation: dg-s-50 var(--dur) infinite; opacity: 0; }
+  .dg-delay-line { animation: dg-dl var(--dur) infinite; }
+  @keyframes dg-s-50 {
+    0%, 49% { opacity: 0; }
+    50%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes dg-dl {
+    50%, 55% { stroke-width: 4; stroke: #ef4444; }
+    56%, 100% { stroke-width: 2.5; stroke: #2563eb; }
+  }
+
+  /* 下B-loopラベル出現 (55%) */
+  .dg-show-55 { transform-origin: 260px 300px; animation: dg-s-55 var(--dur) infinite; opacity: 0; }
+  @keyframes dg-s-55 {
+    0%, 54% { opacity: 0; transform: scale(0.5); }
+    55%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* オプションテキストの出現 (80%) */
+  .dg-show-80 { animation: dg-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes dg-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="dg-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">品質基準の侵食——「今回だけ」が永遠になる</text>
+
+<!-- 目標ボックス（強調アニメーション付き） -->
+<g class="dg-box-goal">
+  <rect class="dg-goal-rect" x="280" y="60" width="200" height="56" rx="10"/>
+  <text x="380" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">品質目標 (Goal)</text>
+  <text x="380" y="100" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">当初のDone定義・品質基準・テスト基準</text>
+</g>
+
+<!-- path-1: 目標→ギャップ + 極性「+」 -->
+<g class="dg-path-1">
+  <path d="M 380 116 L 380 188" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#dg-goal-arr)"/>
+  <text x="395" y="160" text-anchor="start" font-size="16" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- ギャップボックス -->
+<g class="dg-show-10">
+  <rect x="280" y="200" width="200" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="380" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">ギャップ (Gap / Pressure)</text>
+  <text x="380" y="240" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">納期プレッシャーによる焦りと不満</text>
+</g>
+
+<!-- 現状ボックス -->
+<g class="dg-show-12">
+  <rect x="40" y="200" width="180" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="130" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">現状 (Current State)</text>
+  <text x="130" y="240" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">実際の開発スピードと品質レベル</text>
+</g>
+
+<!-- path-2: 現状→ギャップ + 極性「−」 -->
+<g class="dg-path-2">
+  <path d="M 220 228 L 268 228" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#dg-sta-arr)"/>
+  <text x="244" y="218" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- path-3: ギャップ→目標（右側弧） + 極性「−」 -->
+<g class="dg-path-3">
+  <path d="M 480 228 C 600 228, 600 88, 490 88" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#dg-gap-arr)"/>
+  <text x="575" y="165" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 上B-loopラベル -->
+<g class="dg-show-28">
+  <circle cx="490" cy="158" r="14" fill="#fffbeb" stroke="#dc2626" stroke-width="2"/>
+  <text x="490" y="163" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- path-4: ギャップ→改善行動 + 極性「+」 -->
+<g class="dg-path-4">
+  <path d="M 380 256 L 380 328" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#dg-gap-arr)"/>
+  <text x="395" y="300" text-anchor="start" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 改善行動ボックス -->
+<g class="dg-show-38">
+  <rect x="280" y="340" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="380" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">改善行動 (Corrective Action)</text>
+  <text x="380" y="380" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">技術負債の返済・スキルアップ・プロセス改善</text>
+</g>
+
+<!-- path-5: 改善行動→現状（遅延パス、マスクベース描画） + 極性「+」 -->
+<g class="dg-path-5">
+  <path d="M 280 368 C 130 368, 130 310, 130 266" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#dg-act-arr)"/>
+  <text x="115" y="325" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 遅延マーク -->
+<g class="dg-show-50">
+  <line class="dg-delay-line" x1="180" y1="378" x2="195" y2="358" />
+  <line class="dg-delay-line" x1="188" y1="378" x2="203" y2="358" />
+  <text x="190" y="395" text-anchor="middle" font-size="10" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">遅延</text>
+</g>
+
+<!-- 下B-loopラベル -->
+<g class="dg-show-55">
+  <circle cx="260" cy="300" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="260" y="305" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<g class="dg-show-80">
+  <rect x="130" y="430" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="453" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">「今回だけ」の妥協が新しい基準となり、次の妥協の出発点がさらに低くなる侵食のループ</text>
+</g>
+<g class="dg-show-80">
+  <rect x="130" y="480" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="503" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">Doneの定義を明文化し、変更には全員の合意を必須とする——妥協を構造的に困難にする</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-2">ループを読み解く</h3>
+
+<h4 id="b-ループ上段（目標を下げる誘惑）">B ループ上段（目標を下げる誘惑）</h4>
+
+<p>当初の品質基準と現状の開発スピードにギャップがある → プレッシャーが高まる → 「今回だけDoneの定義を緩めよう」「テストは後で書こう」と<strong>目標を下方修正する</strong> → ギャップが縮まる → プレッシャーが解消される</p>
+
+<p>このループの恐ろしさは、<strong>一度回すと次が容易になる</strong>ことだ。初めてDoneの定義を緩めるときは罪悪感がある。二度目は「前もやったし」と抵抗が弱まる。三度目には「これが普通」になる。しかも一度下がった目標が<strong>次のサイクルの出発点になる</strong>。下がった基準からさらに妥協するのだから、気づいたときには元の基準が何だったかすら思い出せなくなる。</p>
+
+<h4 id="b-ループ下段（現状を引き上げる努力）">B ループ下段（現状を引き上げる努力）</h4>
+
+<p>ギャップが生じる → プレッシャーが高まる → 技術負債を返済し、テスト自動化を進め、スキルアップに投資する → 開発スピードと品質が向上する → ギャップが縮まる</p>
+
+<p>こちらのバランスループには<strong>遅延</strong>がある。技術負債の返済はすぐには成果が見えない。テスト自動化の効果が数値に現れるまで数スプリントかかる。「テストを書いている暇があるなら機能を作れ」とプロダクトオーナーに言われたとき、チームは上段のループに逃げたくなる。</p>
+
+<h4 id="なぜdoneの定義は下がり続けるのか">なぜDoneの定義は下がり続けるのか</h4>
+
+<p>この原型の核心は、<strong>目標と現状の両方が変動する</strong>のに、人は目標を下げるほうが圧倒的に簡単だという非対称性にある。現状を上げるには投資と時間が必要だ。目標を下げるには一言「今回だけ特別」と言えばいい。レトロスペクティブで「Doneの定義を見直しました」と言えば、それは「改善した」ようにすら見える。ゆでガエルの水温は、こうして一度に1度ずつ上がっていく。</p>
+
+<h3 id="段階的に進行する症状-2">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 最初の「今回だけ」</div>
+<ul><li>リリースが迫り、「今回だけテストカバレッジ目標を下げよう」と決める</li><li>スプリントレビューで「完成」と報告するが、テストは不完全</li><li>チームは「次のスプリントで取り戻す」と約束する</li><li>小さな妥協は議事録にも残らない</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 妥協の常態化</div>
+<ul><li>Doneの定義が「曖昧な合意」で運用されるようになる</li><li>「動けばDone」が暗黙のルールになる</li><li>コードレビューが形式的になり、設計への指摘が減る</li><li>「前もこのレベルでリリースしたから」が判断基準になる</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 基準の消失</div>
+<ul><li>新しく入ったメンバーが低い基準を「普通」だと思い込む</li><li>テスト自動化の提案が「今はそこまでやらなくていい」と却下される</li><li>技術負債が積み上がり、変更のたびに予想外のバグが出る</li><li>プロダクトオーナーが「品質が落ちた気がする」と感じ始めるが、数値で示せない</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 回復不能な侵食</div>
+<ul><li>当初の品質基準を知るメンバーが誰もいなくなる</li><li>本番障害が「日常」として処理される</li><li>「品質を上げたい」と思っても、何をどこまで上げればいいかわからない</li><li>技術的負債が膨大すぎて、改善の見積もりすら立てられない</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>目標のなし崩しに対するレバレッジは、<strong>Doneの定義を「触れてはいけない聖域」にする</strong>ことです。変更するなら、レトロスペクティブで全員の合意を得て、変更理由と期限を明記する。「今回だけ」という例外は認めない。もし納期に間に合わないなら、Doneの定義を下げるのではなく、スコープを削る。品質を下げるコストと、スコープを削るコストのどちらが高いかは、長期で見れば明白です。</p>
+</div>
+
+<h2 id="成長と投資不足-「アジャイルなんてこんなものだよ」">成長と投資不足——「アジャイルなんてこんなものだよ」</h2>
+
+<div class="diagram">
+  <div class="diagram-title">アジャイル能力への投資不足——「こんなものだよ」の自己実現</div>
+  <svg viewBox="0 0 760 660" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="gui-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="gui-r-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="gui-g-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#16a34a"/>
+  </marker>
+  <marker id="gui-o-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#d97706"/>
+  </marker>
+  <mask id="gui-delay-mask-5">
+    <path d="M 460 256 C 500 256, 500 168, 540 168" fill="none" stroke="white" stroke-width="6" class="gui-mask-draw-5"/>
+  </mask>
+  <mask id="gui-delay-mask-9">
+    <path d="M 360 460 L 360 296" fill="none" stroke="white" stroke-width="6" class="gui-mask-draw-9"/>
+  </mask>
+</defs>
+
+<style>
+  /* タイトル */
+  .gui-title { animation: gui-title var(--dur) infinite; }
+  @keyframes gui-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 需要ボックス（始めから表示） */
+  .gui-box-demand { animation: gui-box-demand var(--dur) infinite; }
+  @keyframes gui-box-demand {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-1: 成長活動→需要 (3-7%) */
+  .gui-path-1 { stroke-dasharray: 600; animation: gui-d-1 var(--dur) infinite; }
+  @keyframes gui-d-1 {
+    0%, 2% { stroke-dashoffset: 600; opacity: 0; }
+    3% { opacity: 1; stroke-dashoffset: 600; }
+    7%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 成長活動ボックス出現 (7%) */
+  .gui-show-7 { animation: gui-s-7 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-7 {
+    0%, 6% { opacity: 0; transform: translateY(10px); }
+    7%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: 需要→成長活動 (7-12%) */
+  .gui-path-2 { stroke-dasharray: 600; animation: gui-d-2 var(--dur) infinite; }
+  @keyframes gui-d-2 {
+    0%, 6% { stroke-dashoffset: 600; opacity: 0; }
+    7% { opacity: 1; stroke-dashoffset: 600; }
+    12%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* R-loopラベル出現 (12%) */
+  .gui-show-loop-r { transform-origin: 190px 110px; animation: gui-loop-r var(--dur) infinite; opacity: 0; }
+  @keyframes gui-loop-r {
+    0%, 11% { opacity: 0; transform: scale(0.5); }
+    12%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: 需要→パフォーマンス 縦下 (15-20%) */
+  .gui-path-3 { stroke-dasharray: 600; animation: gui-d-3 var(--dur) infinite; }
+  @keyframes gui-d-3 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* パフォーマンスボックス出現 (20%) */
+  .gui-show-20 { animation: gui-s-20 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-20 {
+    0%, 19% { opacity: 0; transform: translateY(10px); }
+    20%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: パフォーマンス→需要 縦上 (20-25%) */
+  .gui-path-4 { stroke-dasharray: 600; animation: gui-d-4 var(--dur) infinite; }
+  @keyframes gui-d-4 {
+    0%, 19% { stroke-dashoffset: 600; opacity: 0; }
+    20% { opacity: 1; stroke-dashoffset: 600; }
+    25%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B1-loopラベル出現 (25%) */
+  .gui-show-loop-b1 { transform-origin: 360px 168px; animation: gui-loop-b1 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-loop-b1 {
+    0%, 24% { opacity: 0; transform: scale(0.5); }
+    25%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-5: 遅延パス パフォーマンス→基準 マスクベース (28-38%) */
+  .gui-mask-draw-5 { stroke-dasharray: 600; animation: gui-d-mask-5 var(--dur) infinite; }
+  @keyframes gui-d-mask-5 {
+    0%, 27% { stroke-dashoffset: 600; }
+    38%, 100% { stroke-dashoffset: 0; }
+  }
+  .gui-path-5 { mask: url(#gui-delay-mask-5); animation: gui-p-5 var(--dur) infinite; }
+  @keyframes gui-p-5 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 基準ボックス出現 (30%) + 遅延マーク5赤フラッシュ */
+  .gui-show-30 { animation: gui-s-30 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-30 {
+    0%, 29% { opacity: 0; transform: translateY(10px); }
+    30%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  .gui-show-30-d { animation: gui-s-30-d var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-30-d {
+    0%, 29% { opacity: 0; }
+    30%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .gui-dline-5 { animation: gui-dl-5 var(--dur) infinite; }
+  @keyframes gui-dl-5 {
+    30%, 35% { stroke-width: 4; stroke: #ef4444; }
+    36%, 100% { stroke-width: 2.5; stroke: #dc2626; }
+  }
+
+  /* path-6: パフォーマンス→投資認識 (33-38%) */
+  .gui-path-6 { stroke-dasharray: 600; animation: gui-d-6 var(--dur) infinite; }
+  @keyframes gui-d-6 {
+    0%, 32% { stroke-dashoffset: 600; opacity: 0; }
+    33% { opacity: 1; stroke-dashoffset: 600; }
+    38%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-7: 基準→投資認識 (38-43%) */
+  .gui-path-7 { stroke-dasharray: 600; animation: gui-d-7 var(--dur) infinite; }
+  @keyframes gui-d-7 {
+    0%, 37% { stroke-dashoffset: 600; opacity: 0; }
+    38% { opacity: 1; stroke-dashoffset: 600; }
+    43%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 投資認識ボックス出現 (43%) */
+  .gui-show-43 { animation: gui-s-43 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-43 {
+    0%, 42% { opacity: 0; transform: translateY(10px); }
+    43%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* B2-loopラベル出現 (45%) */
+  .gui-show-loop-b2 { transform-origin: 560px 250px; animation: gui-loop-b2 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-loop-b2 {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-8: 投資認識→投資 (48-53%) */
+  .gui-path-8 { stroke-dasharray: 600; animation: gui-d-8 var(--dur) infinite; }
+  @keyframes gui-d-8 {
+    0%, 47% { stroke-dashoffset: 600; opacity: 0; }
+    48% { opacity: 1; stroke-dashoffset: 600; }
+    53%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 投資ボックス出現 (53%) */
+  .gui-show-53 { animation: gui-s-53 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-53 {
+    0%, 52% { opacity: 0; transform: translateY(10px); }
+    53%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-9: 遅延パス 投資→パフォーマンス マスクベース (55-65%) */
+  .gui-mask-draw-9 { stroke-dasharray: 600; animation: gui-d-mask-9 var(--dur) infinite; }
+  @keyframes gui-d-mask-9 {
+    0%, 54% { stroke-dashoffset: 600; }
+    68%, 100% { stroke-dashoffset: 0; }
+  }
+  .gui-path-9 { mask: url(#gui-delay-mask-9); animation: gui-p-9 var(--dur) infinite; }
+  @keyframes gui-p-9 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延マーク9赤フラッシュ (55%) */
+  .gui-show-55-d { animation: gui-s-55-d var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-55-d {
+    0%, 54% { opacity: 0; }
+    55%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .gui-dline-9 { animation: gui-dl-9 var(--dur) infinite; }
+  @keyframes gui-dl-9 {
+    55%, 60% { stroke-width: 4; stroke: #ef4444; }
+    61%, 100% { stroke-width: 2.5; stroke: #16a34a; }
+  }
+
+  /* パフォーマンスボックス強調 (65-80%) */
+  .gui-box-perf { transform-origin: 360px 268px; animation: gui-box-p var(--dur) infinite; }
+  @keyframes gui-box-p {
+    0%, 64% { transform: scale(1); opacity: 1; }
+    65%, 80% { transform: scale(1.05); opacity: 1; }
+    85%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .gui-perf-rect { animation: gui-perf-rect-anim var(--dur) infinite; }
+  @keyframes gui-perf-rect-anim {
+    0%, 64% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    65%, 80% { fill: #fee2e2; stroke: #b91c1c; stroke-width: 4; }
+    85%, 95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* オプション表示 (80%) */
+  .gui-show-80 { animation: gui-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="gui-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">アジャイル能力への投資不足——「こんなものだよ」の自己実現</text>
+
+<!-- 需要ボックス（始めから表示） -->
+<g class="gui-box-demand">
+  <rect x="260" y="40" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">期待・需要 (Demand)</text>
+  <text x="360" y="80" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">アジャイルチームへの期待・プロジェクト数の増加</text>
+</g>
+
+<!-- 成長活動ボックス (7%出現) + 極性「+」 -->
+<g class="gui-show-7">
+  <rect x="40" y="140" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="140" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">初期の成功 (Action)</text>
+  <text x="140" y="180" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">アジャイル導入の初期成功（小規模チーム）</text>
+</g>
+
+<!-- パフォーマンスボックス (20%出現、65-80%強調) -->
+<g class="gui-show-20 gui-box-perf">
+  <rect class="gui-perf-rect" x="260" y="240" width="200" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="360" y="262" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">実際の成果 (Performance)</text>
+  <text x="360" y="280" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">実際のアジャイルの成果・チームの対応力</text>
+</g>
+
+<!-- 基準ボックス (30%出現) -->
+<g class="gui-show-30">
+  <rect x="540" y="140" width="200" height="56" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="640" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">期待基準 (Standard)</text>
+  <text x="640" y="180" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">「アジャイルチームならこのくらい」という期待基準</text>
+</g>
+
+<!-- 投資の必要性認識ボックス (43%出現) -->
+<g class="gui-show-43">
+  <rect x="540" y="340" width="200" height="56" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="640" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">投資の必要性の認識 (Perceived Need)</text>
+  <text x="640" y="380" text-anchor="middle" font-size="11" fill="#14532d" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">コーチング・研修・組織改革への投資の必要性</text>
+</g>
+
+<!-- 投資ボックス (53%出現) -->
+<g class="gui-show-53">
+  <rect x="260" y="460" width="200" height="56" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="360" y="482" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">能力への投資 (Investment)</text>
+  <text x="360" y="500" text-anchor="middle" font-size="11" fill="#14532d" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">アジャイルコーチ・研修・組織構造の変革への投資</text>
+</g>
+
+<!-- path-1: 成長活動→需要 (3-7%) + 極性「+」 -->
+<g class="gui-path-1">
+  <path d="M 140 140 C 140 68, 200 68, 260 68" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gui-b-arr)"/>
+  <text x="170" y="90" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- path-2: 需要→成長活動 (7-12%) + 極性「+」 -->
+<g class="gui-path-2">
+  <path d="M 300 96 C 300 168, 260 168, 240 168" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gui-b-arr)"/>
+  <text x="280" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- R-loopラベル (12%出現) -->
+<g class="gui-show-loop-r">
+  <circle cx="190" cy="110" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="190" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- path-3: 需要→パフォーマンス 縦下 (15-20%) + 極性 -->
+<g class="gui-path-3">
+  <path d="M 330 96 L 330 240" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gui-b-arr)"/>
+  <text x="315" y="168" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- path-4: パフォーマンス→需要 縦上 (20-25%) + 極性「+」 -->
+<g class="gui-path-4">
+  <path d="M 390 240 L 390 96" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#gui-r-arr)"/>
+  <text x="405" y="168" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B1-loopラベル (25%出現) -->
+<g class="gui-show-loop-b1">
+  <circle cx="360" cy="168" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="360" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- path-5: パフォーマンス→基準 遅延パス (28-38% マスクベース) -->
+<g class="gui-path-5">
+  <path d="M 460 256 C 500 256, 500 168, 540 168" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#gui-r-arr)"/>
+  <text x="500" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 遅延マーク5 (30%赤フラッシュ) -->
+<g class="gui-show-30-d">
+  <line x1="490" y1="218" x2="510" y2="203" stroke="#dc2626" stroke-width="2.5" class="gui-dline-5"/>
+  <line x1="497" y1="225" x2="517" y2="210" stroke="#dc2626" stroke-width="2.5" class="gui-dline-5"/>
+</g>
+
+<!-- path-6: パフォーマンス→投資認識 (33-38%) + 極性 -->
+<g class="gui-path-6">
+  <path d="M 460 280 C 500 280, 500 368, 540 368" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#gui-r-arr)"/>
+  <text x="500" y="315" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- path-7: 基準→投資認識 (38-43%) + 極性「+」 -->
+<g class="gui-path-7">
+  <path d="M 640 196 L 640 340" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#gui-o-arr)"/>
+  <text x="655" y="270" text-anchor="middle" font-size="16" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B2-loopラベル (45%出現) -->
+<g class="gui-show-loop-b2">
+  <circle cx="560" cy="250" r="14" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="560" y="255" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- path-8: 投資認識→投資 (48-53%) + 極性「+」 -->
+<g class="gui-path-8">
+  <path d="M 640 396 C 640 488, 520 488, 460 488" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#gui-g-arr)"/>
+  <text x="580" y="475" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- path-9: 投資→パフォーマンス 遅延パス (55-65% マスクベース) + 極性「+」 -->
+<g class="gui-path-9">
+  <path d="M 360 460 L 360 296" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#gui-g-arr)"/>
+  <text x="340" y="380" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 遅延マーク9 (55%赤フラッシュ) -->
+<g class="gui-show-55-d">
+  <line x1="350" y1="380" x2="370" y2="365" stroke="#16a34a" stroke-width="2.5" class="gui-dline-9"/>
+  <line x1="350" y1="388" x2="370" y2="373" stroke="#16a34a" stroke-width="2.5" class="gui-dline-9"/>
+</g>
+
+<!-- B投資ループラベル (45%出現、共通) -->
+<g class="gui-show-loop-b2">
+  <circle cx="430" cy="380" r="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="430" y="385" text-anchor="middle" font-size="12" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<g class="gui-show-80">
+  <rect x="130" y="550" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="573" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">投資不足が成果不足を生み、「アジャイルは大したことない」と基準が下がり、投資の必要性自体が消失する</text>
+</g>
+<g class="gui-show-80">
+  <rect x="130" y="600" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="623" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">成果が鈍化する「前に」先行投資を断行し、期待基準を下方修正する誘惑を組織的に排除する</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-3">ループを読み解く</h3>
+
+<h4 id="r-ループ（成長のエンジン）">R ループ（成長のエンジン）</h4>
+
+<p>小規模なパイロットチームがアジャイルで成功する → 「うちもアジャイルでやりたい」と他チーム・他プロジェクトからの需要が増える → アジャイル導入を拡大する → 初期の成功体験がさらに需要を呼ぶ</p>
+
+<p>最初の1チームがスクラムで成果を出すと、組織内で「アジャイルはいいらしい」という評判が立つ。マネジメントは「全社展開しよう」と号令をかける。需要は雪だるま式に膨らむ。しかし、最初のチームが成功した条件——優秀なスクラムマスター、経験豊富なメンバー、理解あるプロダクトオーナー——は、全社に横展開できるほど潤沢ではない。</p>
+
+<h4 id="b-ループ1（能力不足による成長の制約）">B ループ1（能力不足による成長の制約）</h4>
+
+<p>需要が急増する → スクラムマスターもコーチもいない状態でチームが乱立する → アジャイルの成果が低下する → 期待基準とのギャップが開く → 投資の必要性が認識される → コーチング・研修に投資する → 成果が回復する</p>
+
+<p>ここに<strong>致命的な遅延</strong>がある。コーチを採用してからチームが自律的に動けるようになるまで数ヶ月かかる。研修を受けてから実践で使えるようになるまでさらに時間がかかる。その間、「投資したのに成果が出ない」というプレッシャーがかかり続ける。</p>
+
+<h4 id="b-ループ2（基準の妥協-最も危険なループ）">B ループ2（基準の妥協——最も危険なループ）</h4>
+
+<p>アジャイルの成果が低下する → 期待基準とのギャップが開く → <strong>「アジャイルチームってこんなものだよ」と期待基準そのものを引き下げる</strong> → ギャップが見かけ上縮まる → 投資の必要性が感じられなくなる → 投資が行われない → 成果は低いまま定着する</p>
+
+<p>これが「成長と投資不足」の<strong>核心構造</strong>だ。パイロットチームの成功で「アジャイルは2倍速い」と期待が生まれた。しかし全社展開後、投資不足で成果が伸びない。そのとき「まあウォーターフォールと同じくらいの速度なら許容範囲だよね」と基準を下げてしまえば、もう投資の根拠が消える。<strong>自己実現的予言</strong>——「アジャイルは大したことない」と信じた結果、本当にそうなる。</p>
+
+<h3 id="段階的に進行する症状-3">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: パイロットの成功</div>
+<ul><li>1チームのアジャイル導入が明確な成果を出す</li><li>「全社展開しよう」と経営層が決断する</li><li>コーチングや研修への投資は「まだ早い」と先送りされる</li><li>「最初のチームができたんだから、他のチームもできるはず」</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 拡大と品質低下</div>
+<ul><li>経験の浅いチームが次々とスクラムを「始める」</li><li>スクラムマスターが5チームを兼任する</li><li>各チームが独自解釈でスクラムを実行し、バラバラの品質になる</li><li>「アジャイルコーチを雇いたい」という声が出るが予算が通らない</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 基準の切り下げ</div>
+<ul><li>全社のアジャイルの成果が期待を大きく下回る</li><li>「アジャイルって言っても劇的には変わらないよね」が定説になる</li><li>投資提案に対して「費用対効果が見えない」と却下される</li><li>成果が出ない → 投資しない → 成果が出ない、のループが回り始める</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 自己実現的予言の完成</div>
+<ul><li>「アジャイルは一部のエリートチームにしか向かない」が社内の常識になる</li><li>コーチング・研修の予算が完全にゼロになる</li><li>形だけのスクラムが惰性で続くか、静かにウォーターフォールに戻る</li><li>パイロットで成功した優秀なメンバーが「この組織では限界だ」と去る</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>成長と投資不足に対するレバレッジは2つあります。第一に、<strong>先行投資</strong>です。「成果が出てから投資する」のでは構造的に手遅れになります。アジャイル展開の計画段階で、コーチング・研修・組織変革への投資を織り込むこと。第二に、<strong>期待基準を聖域にする</strong>ことです。「このくらいでいいか」と基準を下げた瞬間、投資の必要性が消失します。パイロットチームの成果を基準として維持し、全チームがそこに到達するための投資を経営課題として位置づけることが鍵です。</p>
+</div>
+
+<h2 id="エスカレーション-チームの自律-vs-マネジメントの管理、終わりなき軍拡競争">エスカレーション——チームの自律 vs マネジメントの管理、終わりなき軍拡競争</h2>
+
+<div class="diagram">
+  <div class="diagram-title">自律性 vs 管理強化——終わりなき軍拡競争</div>
+  <svg viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="esc-a-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="esc-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="esc-c-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+</defs>
+
+<style>
+  /* タイトル */
+  .esc-title { animation: esc-title var(--dur) infinite; }
+  @keyframes esc-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 中央ボックス（始めから表示、55-75%で強調） */
+  .esc-box-center { transform-origin: 380px 168px; animation: esc-box-c var(--dur) infinite; }
+  @keyframes esc-box-c {
+    0%, 54% { transform: scale(1); opacity: 1; }
+    55%, 75% { transform: scale(1.05); opacity: 1; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .esc-center-rect { animation: esc-center-rect var(--dur) infinite; }
+  @keyframes esc-center-rect {
+    0%, 54% { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; }
+    55%, 75% { fill: #ede9fe; stroke: #6d28d9; stroke-width: 4; }
+    80%, 95% { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; }
+    100% { fill: #f5f3ff; }
+  }
+
+  /* path-1: A-action → 中央への上矢印（5-10%） */
+  .esc-path-1 { stroke-dasharray: 600; animation: esc-d-1 var(--dur) infinite; }
+  @keyframes esc-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A-actionボックス出現（10%） */
+  .esc-show-10 { animation: esc-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes esc-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: 中央 → A-actionへの下矢印（15-20%） */
+  .esc-path-2 { stroke-dasharray: 600; animation: esc-d-2 var(--dur) infinite; }
+  @keyframes esc-d-2 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 左B-loopラベル出現（20%） */
+  .esc-show-loop-l { transform-origin: 255px 168px; animation: esc-loop-l var(--dur) infinite; opacity: 0; }
+  @keyframes esc-loop-l {
+    0%, 19% { opacity: 0; transform: scale(0.5); }
+    20%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: B-action → 中央への上矢印（25-30%） */
+  .esc-path-3 { stroke-dasharray: 600; animation: esc-d-3 var(--dur) infinite; }
+  @keyframes esc-d-3 {
+    0%, 24% { stroke-dashoffset: 600; opacity: 0; }
+    25% { opacity: 1; stroke-dashoffset: 600; }
+    30%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B-actionボックス出現（30%） */
+  .esc-show-30 { animation: esc-s-30 var(--dur) infinite; opacity: 0; }
+  @keyframes esc-s-30 {
+    0%, 29% { opacity: 0; transform: translateY(10px); }
+    30%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: 中央 → B-actionへの下矢印（35-40%） */
+  .esc-path-4 { stroke-dasharray: 600; animation: esc-d-4 var(--dur) infinite; }
+  @keyframes esc-d-4 {
+    0%, 34% { stroke-dashoffset: 600; opacity: 0; }
+    35% { opacity: 1; stroke-dashoffset: 600; }
+    40%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 右B-loopラベル出現（40%） */
+  .esc-show-loop-r { transform-origin: 505px 168px; animation: esc-loop-r var(--dur) infinite; opacity: 0; }
+  @keyframes esc-loop-r {
+    0%, 39% { opacity: 0; transform: scale(0.5); }
+    40%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* オプション表示（80%） */
+  .esc-show-80 { animation: esc-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes esc-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="esc-title" x="380" y="40" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">自律性 vs 管理強化——終わりなき軍拡競争</text>
+
+<!-- 1. A-actionボックス + 極性「+」 -->
+<g class="esc-show-10">
+  <rect x="40" y="140" width="180" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="130" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームの行動（自律の確保）</text>
+  <text x="130" y="180" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">開発チームが独自ルール・ツール・プロセスで自律を確保</text>
+  <text x="255" y="105" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 2. 中央ボックス（始めから表示） -->
+<g class="esc-box-center">
+  <rect class="esc-center-rect" x="290" y="140" width="180" height="56" rx="10"/>
+  <text x="380" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームの自律度</text>
+  <text x="380" y="180" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームの自律度（＝マネジメントの不安度）</text>
+</g>
+
+<!-- 3. B-actionボックス + 極性 -->
+<g class="esc-show-30">
+  <rect x="540" y="140" width="180" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="630" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">マネジメントの行動（管理の強化）</text>
+  <text x="630" y="180" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">マネジメントが報告義務・承認フロー・監視ツールで管理を強化</text>
+  <text x="505" y="105" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 4. path-1: A-action → 中央への上矢印 -->
+<g class="esc-path-1">
+  <path d="M 160 140 C 200 90, 310 90, 350 140" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#esc-a-arr)"/>
+</g>
+
+<!-- 5. path-2: 中央 → A-actionへの下矢印 + 極性「−」 -->
+<g class="esc-path-2">
+  <path d="M 350 196 C 310 246, 200 246, 160 196" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#esc-c-arr)"/>
+  <text x="255" y="235" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 6. 左B-loopラベル -->
+<g class="esc-show-loop-l">
+  <circle cx="255" cy="168" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="255" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- 7. path-3: B-action → 中央への上矢印 -->
+<g class="esc-path-3">
+  <path d="M 600 140 C 560 90, 450 90, 410 140" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#esc-b-arr)"/>
+</g>
+
+<!-- 8. path-4: 中央 → B-actionへの下矢印 + 極性「+」 -->
+<g class="esc-path-4">
+  <path d="M 410 196 C 450 246, 560 246, 600 196" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#esc-c-arr)"/>
+  <text x="505" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 9. 右B-loopラベル -->
+<g class="esc-show-loop-r">
+  <circle cx="505" cy="168" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="505" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<g class="esc-show-80">
+  <rect x="130" y="320" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="343" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームが自律を求めるほどマネジメントは不安になり管理を強化し、管理が強化されるほどチームは反発する</text>
+</g>
+<g class="esc-show-80">
+  <rect x="130" y="370" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="393" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">対立構造を「共通の成果指標」に置き換え、自律と透明性を両立させる仕組みを設計する</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-4">ループを読み解く</h3>
+
+<h4 id="b-ループ左（チームの論理）">B ループ左（チームの論理）</h4>
+
+<p>マネジメントの管理が強化される → チームが「自分たちで判断できない」と窮屈に感じる → 独自のやり方・ツール・ルールを作って自律を確保しようとする → チームの行動がマネジメントから見えなくなる → マネジメントの不安が増す</p>
+
+<p>チームにとっては合理的な行動だ。「スプリント内のことはチームが決める」がスクラムの原則であり、承認フローや報告義務は自律性を脅かす。だから自衛手段として独自の運用を作る。Slackの非公開チャンネル、マネジメントに見せない内部ボード、形式的な報告と実際の進め方の乖離——「表と裏」が生まれる。</p>
+
+<h4 id="b-ループ右（マネジメントの論理）">B ループ右（マネジメントの論理）</h4>
+
+<p>チームが独自に動き始める → マネジメントから「何をやっているかわからない」と見える → 「ガバナンスが効いていない」と不安になる → 報告義務・承認フロー・進捗監視ツールを追加する → チームの自律度がさらに低下する</p>
+
+<p>マネジメントもまた合理的に行動している。数千万円の投資をしたプロジェクトの状況が把握できないのは、経営者として許容できない。「アジャイルだから見えなくて当然」では株主に説明できない。だから管理を強化する。<strong>両者とも合理的に行動しているにもかかわらず、組織全体としては非合理な軍拡競争が始まる</strong>——これがエスカレーションの本質だ。</p>
+
+<h3 id="段階的に進行する症状-4">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 小さな摩擦</div>
+<ul><li>チームが「デイリースクラムにマネージャーは不要」と主張する</li><li>マネジメントが「週次で進捗レポートを出してほしい」と要請する</li><li>両者とも「相手が理解してくれない」と感じるが、表面上は穏やか</li><li>「アジャイルの浸透には時間がかかる」と双方が楽観視する</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 対抗手段の応酬</div>
+<ul><li>チームが非公開のコミュニケーションチャンネルを作り始める</li><li>マネジメントがJiraの項目を増やし、ステータス更新を義務化する</li><li>チームは「形式的な報告」と「実際の進め方」を使い分け始める</li><li>マネジメントは「なぜ報告と実態が違うのか」と疑念を強める</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 信頼の崩壊</div>
+<ul><li>チームが「マネジメントは敵だ」という意識を持ち始める</li><li>マネジメントが「チームを信用できない」と監視を強化する</li><li>スクラムマスターが両者の板挟みで疲弊する</li><li>アジャイルコーチの提言が両者から「相手寄りだ」と拒否される</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 組織の分断</div>
+<ul><li>チームとマネジメントが完全に分断され、情報が流れなくなる</li><li>チームは「言われたことだけやる」に退行し、自律を放棄する</li><li>マネジメントは「やはりアジャイルには管理が必要だ」と確信する</li><li>優秀なメンバーが「この環境では成長できない」と離職する</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>エスカレーションに対するレバレッジは、どちらかを「勝たせる」ことではありません。<strong>対立の構造そのものを変える</strong>ことです。チームの自律性とマネジメントの透明性は、本来トレードオフではなく両立できます。スプリントレビューでの動くソフトウェアのデモ、プロダクトバックログの公開、バーンダウンチャートの自動生成——チームが自律的に働きながら、その成果が自然とマネジメントに見える仕組みを設計することが鍵です。「管理」を「監視」から「成果の可視化」に再定義する。</p>
+</div>
+
+<h2 id="強者はますます強く-パイロットチームに全てが集まり、他は飢える">強者はますます強く——パイロットチームに全てが集まり、他は飢える</h2>
+
+<div class="diagram">
+  <div class="diagram-title">パイロットチーム総取りの構造——強者はますます強く</div>
+  <svg viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="sts-a-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="sts-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="sts-c-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+</defs>
+
+<style>
+  /* タイトル */
+  .sts-title { animation: sts-title var(--dur) infinite; }
+  @keyframes sts-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 中央ボックス（始めから表示） */
+  .sts-box-center { transform-origin: 380px 168px; animation: sts-box-c var(--dur) infinite; }
+  @keyframes sts-box-c {
+    0%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-1: A-success → 中央への上矢印（5-10%） */
+  .sts-path-1 { stroke-dasharray: 600; animation: sts-d-1 var(--dur) infinite; }
+  @keyframes sts-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A-successボックス出現（10%） */
+  .sts-show-10 { animation: sts-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes sts-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: 中央 → A-successへの下矢印（15-20%） */
+  .sts-path-2 { stroke-dasharray: 600; animation: sts-d-2 var(--dur) infinite; }
+  @keyframes sts-d-2 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 左R-loopラベル出現（20%） */
+  .sts-show-loop-l { transform-origin: 255px 168px; animation: sts-loop-l var(--dur) infinite; opacity: 0; }
+  @keyframes sts-loop-l {
+    0%, 19% { opacity: 0; transform: scale(0.5); }
+    20%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: B-success → 中央への上矢印（30-35%） */
+  .sts-path-3 { stroke-dasharray: 600; animation: sts-d-3 var(--dur) infinite; }
+  @keyframes sts-d-3 {
+    0%, 29% { stroke-dashoffset: 600; opacity: 0; }
+    30% { opacity: 1; stroke-dashoffset: 600; }
+    35%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B-successボックス出現（35%） */
+  .sts-show-35 { animation: sts-s-35 var(--dur) infinite; opacity: 0; }
+  @keyframes sts-s-35 {
+    0%, 34% { opacity: 0; transform: translateY(10px); }
+    35%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: 中央 → B-successへの下矢印（40-45%） */
+  .sts-path-4 { stroke-dasharray: 600; animation: sts-d-4 var(--dur) infinite; }
+  @keyframes sts-d-4 {
+    0%, 39% { stroke-dashoffset: 600; opacity: 0; }
+    40% { opacity: 1; stroke-dashoffset: 600; }
+    45%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 右R-loopラベル出現（45%） */
+  .sts-show-loop-r { transform-origin: 505px 168px; animation: sts-loop-r var(--dur) infinite; opacity: 0; }
+  @keyframes sts-loop-r {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* A-success強調（60-75%）: scale(1.05), 青く強調 */
+  .sts-box-a { transform-origin: 130px 168px; animation: sts-box-a var(--dur) infinite; }
+  .sts-a-rect { animation: sts-a-rect var(--dur) infinite; }
+  @keyframes sts-box-a {
+    0%, 59% { transform: scale(1); opacity: 1; }
+    60%, 75% { transform: scale(1.05); opacity: 1; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes sts-a-rect {
+    0%, 59% { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    60%, 75% { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 4; }
+    80%, 95% { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    100% { fill: #eff6ff; }
+  }
+
+  /* B-success縮小（60-75%）: scale(0.95), 薄く */
+  .sts-box-b { transform-origin: 630px 168px; animation: sts-box-b var(--dur) infinite; }
+  .sts-b-rect { animation: sts-b-rect var(--dur) infinite; }
+  @keyframes sts-box-b {
+    0%, 59% { transform: scale(1); opacity: 1; }
+    60%, 75% { transform: scale(0.95); opacity: 0.6; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes sts-b-rect {
+    0%, 59% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    60%, 75% { fill: #fef2f2; stroke: #f87171; stroke-width: 1; }
+    80%, 95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* オプション表示（80%） */
+  .sts-show-80 { animation: sts-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes sts-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="sts-title" x="380" y="40" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">パイロットチーム総取りの構造——強者はますます強く</text>
+
+<!-- 1. A-successボックス + 極性「+」（10%出現、60-75%強調） -->
+<g class="sts-show-10 sts-box-a">
+  <rect class="sts-a-rect" x="40" y="140" width="180" height="56" rx="10"/>
+  <text x="130" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">パイロットチームの成果</text>
+  <text x="130" y="180" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">パイロットチームの成果・実績</text>
+  <text x="255" y="105" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 2. 中央ボックス（始めから表示） -->
+<g class="sts-box-center">
+  <rect x="290" y="140" width="180" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="380" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">リソース配分の偏り</text>
+  <text x="380" y="180" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">パイロットチームへの優先的なコーチ・予算・人材配分</text>
+</g>
+
+<!-- 3. B-successボックス + 極性（35%出現、60-75%縮小） -->
+<g class="sts-show-35 sts-box-b">
+  <rect class="sts-b-rect" x="540" y="140" width="180" height="56" rx="10"/>
+  <text x="630" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">後発チームの成果</text>
+  <text x="630" y="180" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">後発チームの成果（低迷）</text>
+  <text x="505" y="105" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 4. path-1: A-success → 中央への上矢印 -->
+<g class="sts-path-1">
+  <path d="M 160 140 C 200 90, 310 90, 350 140" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#sts-a-arr)"/>
+</g>
+
+<!-- 5. path-2: 中央 → A-successへの下矢印 + 極性「+」 -->
+<g class="sts-path-2">
+  <path d="M 350 196 C 310 246, 200 246, 160 196" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#sts-c-arr)"/>
+  <text x="255" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 6. 左R-loopラベル -->
+<g class="sts-show-loop-l">
+  <circle cx="255" cy="168" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="255" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- 7. path-3: B-success → 中央への上矢印 -->
+<g class="sts-path-3">
+  <path d="M 600 140 C 560 90, 450 90, 410 140" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#sts-b-arr)"/>
+</g>
+
+<!-- 8. path-4: 中央 → B-successへの下矢印 + 極性「−」 -->
+<g class="sts-path-4">
+  <path d="M 410 196 C 450 246, 560 246, 600 196" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#sts-c-arr)"/>
+  <text x="505" y="235" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 9. 右R-loopラベル -->
+<g class="sts-show-loop-r">
+  <circle cx="505" cy="168" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="505" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<g class="sts-show-80">
+  <rect x="130" y="320" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="343" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">初期の成功チームにリソースが集中し、他チームはリソース不足で失敗し、「やはりアジャイルは特別な人にしかできない」と誤認される</text>
+</g>
+<g class="sts-show-80">
+  <rect x="130" y="370" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="393" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">パイロットの成功を「属人的な成果」ではなく「再現可能な仕組み」として横展開するための投資を設計する</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-5">ループを読み解く</h3>
+
+<h4 id="r-ループ左（パイロットチームの好循環）">R ループ左（パイロットチームの好循環）</h4>
+
+<p>パイロットチームが成果を出す → 「あのチームは優秀だ」と評価される → 優秀なスクラムマスター、経験豊富なコーチ、潤沢な予算が集中する → さらに高い成果を出す</p>
+
+<p>これは<strong>マタイ効果</strong>の構造だ。「持てる者はさらに与えられる」。パイロットチームは全社の注目を浴び、社外カンファレンスで成功事例を発表し、採用のブランディングにも使われる。潤沢なリソースのもとで、チームはさらに洗練されたプラクティスを実践できる。</p>
+
+<h4 id="r-ループ右（後発チームの悪循環）">R ループ右（後発チームの悪循環）</h4>
+
+<p>パイロットチームにリソースが集中する → 後発チームへの配分が減る → 後発チームの成果が出ない → 「あのチームはアジャイルに向いていない」と評価される → さらにリソースが引き上げられてパイロットチームに回される</p>
+
+<p>後発チームの低迷は能力の問題ではなく、<strong>構造の帰結</strong>だ。スクラムマスターが5チーム兼任で週に1回しか顔を出せない。コーチングゼロ、研修ゼロ、予算ゼロ。この条件で成果が出なければ「やはりアジャイルは難しい」と評価される。パイロットチームと同じリソースを与えれば同じ成果が出る可能性は検証すらされない。<strong>成功も失敗も、チームの能力以上にリソース配分の構造が生み出している</strong>——これが「強者はますます強く」の本質だ。</p>
+
+<h3 id="段階的に進行する症状-5">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: パイロットの成功と注目</div>
+<ul><li>最初のアジャイルチームが目覚ましい成果を出す</li><li>経営層が「成功の秘訣」としてパイロットチームを社内外にアピール</li><li>後発チームが「うちもああなりたい」とアジャイルを始める</li><li>この段階ではリソースの差はわずかで、逆転可能に見える</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: リソース配分の傾斜</div>
+<ul><li>パイロットチームに専任のアジャイルコーチがつく</li><li>後発チームのコーチング予算が「来期に」と先送りされる</li><li>パイロットチームのメンバーが社内勉強会の講師になるが、後発チームは聴くだけ</li><li>後発チームのメンバーが「不公平だ」と不満を漏らし始める</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 格差の固定化</div>
+<ul><li>パイロットチームが「アジャイル成功事例」として全社に紹介される</li><li>後発チームの有能なメンバーがパイロットチームに異動を希望する</li><li>後発チームの低調な成果が「やはり彼らには難しかった」と解釈される</li><li>「アジャイルの才能がある人とない人がいる」という誤った信念が広まる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 二極化の完成</div>
+<ul><li>パイロットチーム「だけ」が成功している状態が常態化する</li><li>後発チームがアジャイルを放棄し、ウォーターフォールに戻る</li><li>組織全体のアジャイル移行は事実上頓挫する</li><li>「アジャイルは選ばれた人だけのもの」という神話が定着する</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>強者はますます強くに対するレバレッジは、パイロットチームの成功を弱めることではありません。<strong>成功の条件を「属人的な才能」ではなく「再現可能な仕組み」として抽出し、横展開する</strong>ことです。パイロットチームのコーチが後発チームにも均等に時間を割く。成功したプラクティスをドキュメント化し、ペアリングやモブワークで伝播させる。評価基準を「個別チームの成果」から「組織全体のアジャイル成熟度」に変える。リソース配分の偏りに自覚的でいることが、構造的な不公平を是正する第一歩です。</p>
+</div>
+
+<h2 id="共有地の悲劇-各チームの局所最適がコードベースを荒廃させる">共有地の悲劇——各チームの局所最適がコードベースを荒廃させる</h2>
+
+<div class="diagram">
+  <div class="diagram-title">コードベースの「共有地の悲劇」</div>
+  <svg viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="toc-a-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="toc-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="toc-c-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+
+  <!-- 遅延マスクA: 共有資源→A成果 -->
+  <mask id="toc-delay-mask-a">
+    <path d="M 340 340 C 340 200, 300 78, 260 78" fill="none" stroke="white" stroke-width="6" class="toc-mask-draw-a" />
+  </mask>
+  <!-- 遅延マスクB: 共有資源→B成果 -->
+  <mask id="toc-delay-mask-b">
+    <path d="M 420 340 C 420 200, 460 78, 500 78" fill="none" stroke="white" stroke-width="6" class="toc-mask-draw-b" />
+  </mask>
+</defs>
+
+<style>
+  /* タイトル */
+  .toc-title { animation: toc-title var(--dur) infinite; }
+  @keyframes toc-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A成果ボックス（始めから表示） */
+  .toc-show-0-a { animation: toc-s-0-a var(--dur) infinite; }
+  @keyframes toc-s-0-a {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-1: A成果→A活動 左弧下 3-8% */
+  .toc-path-1 { stroke-dasharray: 600; animation: toc-d-1 var(--dur) infinite; }
+  @keyframes toc-d-1 {
+    0%, 2% { stroke-dashoffset: 600; opacity: 0; }
+    3% { opacity: 1; stroke-dashoffset: 600; }
+    8%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A活動ボックス出現 8% */
+  .toc-show-8 { animation: toc-s-8 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-8 {
+    0%, 7% { opacity: 0; transform: translateY(10px); }
+    8%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: A活動→A成果 左弧上 8-13% */
+  .toc-path-2 { stroke-dasharray: 600; animation: toc-d-2 var(--dur) infinite; }
+  @keyframes toc-d-2 {
+    0%, 7% { stroke-dashoffset: 600; opacity: 0; }
+    8% { opacity: 1; stroke-dashoffset: 600; }
+    13%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A-R-loopラベル出現 13% */
+  .toc-show-13 { transform-origin: 160px 153px; animation: toc-s-13 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-13 {
+    0%, 12% { opacity: 0; transform: scale(0.5); }
+    13%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* B成果ボックス出現 16% */
+  .toc-show-16 { animation: toc-s-16 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-16 {
+    0%, 15% { opacity: 0; transform: translateY(10px); }
+    16%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: B成果→B活動 右弧下 16-21% */
+  .toc-path-3 { stroke-dasharray: 600; animation: toc-d-3 var(--dur) infinite; }
+  @keyframes toc-d-3 {
+    0%, 15% { stroke-dashoffset: 600; opacity: 0; }
+    16% { opacity: 1; stroke-dashoffset: 600; }
+    21%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B活動ボックス出現 21% */
+  .toc-show-21 { animation: toc-s-21 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-21 {
+    0%, 20% { opacity: 0; transform: translateY(10px); }
+    21%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: B活動→B成果 右弧上 21-26% */
+  .toc-path-4 { stroke-dasharray: 600; animation: toc-d-4 var(--dur) infinite; }
+  @keyframes toc-d-4 {
+    0%, 20% { stroke-dashoffset: 600; opacity: 0; }
+    21% { opacity: 1; stroke-dashoffset: 600; }
+    26%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B-R-loopラベル出現 26% */
+  .toc-show-26 { transform-origin: 600px 153px; animation: toc-s-26 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-26 {
+    0%, 25% { opacity: 0; transform: scale(0.5); }
+    26%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-5: A活動→共有資源 30-35% */
+  .toc-path-5 { stroke-dasharray: 600; animation: toc-d-5 var(--dur) infinite; }
+  @keyframes toc-d-5 {
+    0%, 29% { stroke-dashoffset: 600; opacity: 0; }
+    30% { opacity: 1; stroke-dashoffset: 600; }
+    35%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 共有資源ボックス出現 35% + 強調 65-80% */
+  .toc-box-resource { transform-origin: 380px 368px; animation: toc-box-r var(--dur) infinite; opacity: 0; }
+  .toc-resource-rect { animation: toc-resource-rect-anim var(--dur) infinite; }
+  @keyframes toc-box-r {
+    0%, 34% { transform: scale(1); opacity: 0; }
+    35%, 64% { transform: scale(1); opacity: 1; }
+    65%, 80% { transform: scale(1.05); opacity: 1; }
+    85%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes toc-resource-rect-anim {
+    0%, 64% { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; }
+    65%, 80% { fill: #ede9fe; stroke: #4c1d95; stroke-width: 4; }
+    85%, 95% { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; }
+    100% { fill: #f5f3ff; }
+  }
+
+  /* path-6: B活動→共有資源 35-40% */
+  .toc-path-6 { stroke-dasharray: 600; animation: toc-d-6 var(--dur) infinite; }
+  @keyframes toc-d-6 {
+    0%, 34% { stroke-dashoffset: 600; opacity: 0; }
+    35% { opacity: 1; stroke-dashoffset: 600; }
+    40%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延マスク描画A: 42-58% */
+  .toc-mask-draw-a { stroke-dasharray: 600; animation: toc-d-mask-a var(--dur) infinite; }
+  @keyframes toc-d-mask-a {
+    0%, 41% { stroke-dashoffset: 600; }
+    58%, 100% { stroke-dashoffset: 0; }
+  }
+  .toc-path-7 { mask: url(#toc-delay-mask-a); animation: toc-p-7 var(--dur) infinite; }
+  @keyframes toc-p-7 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延マークA 赤フラッシュ 45% */
+  .toc-show-45-da { animation: toc-s-45-da var(--dur) infinite; opacity: 0; }
+  .toc-delay-line-a { animation: toc-dl-a var(--dur) infinite; }
+  @keyframes toc-s-45-da {
+    0%, 44% { opacity: 0; }
+    45%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes toc-dl-a {
+    45%, 50% { stroke-width: 4; stroke: #ef4444; }
+    51%, 100% { stroke-width: 2.5; stroke: #7c3aed; }
+  }
+
+  /* 遅延マスク描画B: 48-63% */
+  .toc-mask-draw-b { stroke-dasharray: 600; animation: toc-d-mask-b var(--dur) infinite; }
+  @keyframes toc-d-mask-b {
+    0%, 47% { stroke-dashoffset: 600; }
+    63%, 100% { stroke-dashoffset: 0; }
+  }
+  .toc-path-8 { mask: url(#toc-delay-mask-b); animation: toc-p-8 var(--dur) infinite; }
+  @keyframes toc-p-8 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延マークB 赤フラッシュ 50% */
+  .toc-show-50-db { animation: toc-s-50-db var(--dur) infinite; opacity: 0; }
+  .toc-delay-line-b { animation: toc-dl-b var(--dur) infinite; }
+  @keyframes toc-s-50-db {
+    0%, 49% { opacity: 0; }
+    50%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes toc-dl-b {
+    50%, 55% { stroke-width: 4; stroke: #ef4444; }
+    56%, 100% { stroke-width: 2.5; stroke: #7c3aed; }
+  }
+
+  /* 左B-loopラベル出現 55% */
+  .toc-show-55 { transform-origin: 280px 240px; animation: toc-s-55 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-55 {
+    0%, 54% { opacity: 0; transform: scale(0.5); }
+    55%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 右B-loopラベル出現 58% + 遅延テキスト */
+  .toc-show-58 { transform-origin: 480px 240px; animation: toc-s-58 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-58 {
+    0%, 57% { opacity: 0; transform: scale(0.5); }
+    58%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延テキスト出現 58% (B-loopと同時、ただしscale不要) */
+  .toc-show-58-text { animation: toc-s-58-text var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-58-text {
+    0%, 57% { opacity: 0; }
+    58%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* オプションテキストの出現 80% */
+  .toc-show-80 { animation: toc-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes toc-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="toc-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">コードベースの「共有地の悲劇」</text>
+
+<!-- A成果ボックス（始めから表示） -->
+<g class="toc-show-0-a">
+  <rect x="60" y="50" width="200" height="56" rx="10" fill="#f8fafc" stroke="#2563eb" stroke-width="2" stroke-dasharray="4 2"/>
+  <text x="160" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームAの成果</text>
+  <text x="160" y="90" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームAのベロシティ・スプリントゴール達成率</text>
+</g>
+
+<!-- path-1: A成果→A活動 左弧下 + 極性 -->
+<g class="toc-path-1">
+  <path d="M 100 106 C 60 140, 60 160, 100 200" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#toc-a-arr)"/>
+  <text x="75" y="158" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- A活動ボックス出現 8% -->
+<g class="toc-show-8">
+  <rect x="60" y="200" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="160" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームAの行動</text>
+  <text x="160" y="240" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームAがスプリントゴール優先で技術負債を積む</text>
+</g>
+
+<!-- path-2: A活動→A成果 左弧上 + 極性 -->
+<g class="toc-path-2">
+  <path d="M 220 200 C 260 160, 260 140, 220 106" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#toc-a-arr)"/>
+  <text x="245" y="158" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- A-R-loopラベル出現 13% -->
+<g class="toc-show-13">
+  <circle cx="160" cy="153" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="160" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- B成果ボックス出現 16% -->
+<g class="toc-show-16">
+  <rect x="500" y="50" width="200" height="56" rx="10" fill="#f8fafc" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+  <text x="600" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームBの成果</text>
+  <text x="600" y="90" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームBのベロシティ・スプリントゴール達成率</text>
+</g>
+
+<!-- path-3: B成果→B活動 右弧下 + 極性 -->
+<g class="toc-path-3">
+  <path d="M 660 106 C 700 140, 700 160, 660 200" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#toc-b-arr)"/>
+  <text x="685" y="158" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B活動ボックス出現 21% -->
+<g class="toc-show-21">
+  <rect x="500" y="200" width="200" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="600" y="222" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームBの行動</text>
+  <text x="600" y="240" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">チームBもスプリントゴール優先で技術負債を積む</text>
+</g>
+
+<!-- path-4: B活動→B成果 右弧上 + 極性 -->
+<g class="toc-path-4">
+  <path d="M 540 200 C 500 160, 500 140, 540 106" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#toc-b-arr)"/>
+  <text x="515" y="158" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B-R-loopラベル出現 26% -->
+<g class="toc-show-26">
+  <circle cx="600" cy="153" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="600" y="158" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- path-5: A活動→共有資源 + 極性 -->
+<g class="toc-path-5">
+  <path d="M 160 256 C 160 320, 240 368, 280 368" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#toc-a-arr)"/>
+  <text x="210" y="340" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 共有資源ボックス出現 35% + 強調 65-80% -->
+<g class="toc-box-resource">
+  <rect class="toc-resource-rect" x="280" y="340" width="200" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="380" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">共有資源の劣化</text>
+  <text x="380" y="380" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">共有コードベース・CI/CD・テスト環境の荒廃</text>
+</g>
+
+<!-- path-6: B活動→共有資源 + 極性 -->
+<g class="toc-path-6">
+  <path d="M 600 256 C 600 320, 520 368, 480 368" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#toc-b-arr)"/>
+  <text x="550" y="340" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- path-7(遅延): 共有資源→A成果 (マスクベース描画) + 極性 -->
+<g class="toc-path-7">
+  <path d="M 340 340 C 340 200, 300 78, 260 78" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#toc-c-arr)"/>
+  <text x="310" y="150" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 遅延マークA: 赤フラッシュ 45% -->
+<g class="toc-show-45-da">
+  <line class="toc-delay-line-a" x1="322" y1="210" x2="342" y2="195" stroke="#7c3aed" stroke-width="2.5"/>
+  <line class="toc-delay-line-a" x1="329" y1="218" x2="349" y2="203" stroke="#7c3aed" stroke-width="2.5"/>
+</g>
+
+<!-- path-8(遅延): 共有資源→B成果 (マスクベース描画) + 極性 -->
+<g class="toc-path-8">
+  <path d="M 420 340 C 420 200, 460 78, 500 78" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#toc-c-arr)"/>
+  <text x="450" y="150" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 遅延マークB: 赤フラッシュ 50% -->
+<g class="toc-show-50-db">
+  <line class="toc-delay-line-b" x1="418" y1="205" x2="438" y2="190" stroke="#7c3aed" stroke-width="2.5"/>
+  <line class="toc-delay-line-b" x1="425" y1="213" x2="445" y2="198" stroke="#7c3aed" stroke-width="2.5"/>
+</g>
+
+<!-- 左B-loopラベル出現 55% -->
+<g class="toc-show-55">
+  <circle cx="280" cy="240" r="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="280" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- 右B-loopラベル出現 58% -->
+<g class="toc-show-58">
+  <circle cx="480" cy="240" r="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="480" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- 遅延テキスト出現 58% -->
+<text class="toc-show-58-text" x="380" y="212" text-anchor="middle" font-size="10" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">遅延</text>
+
+<g class="toc-show-80">
+  <rect x="130" y="450" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="473" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">各チームがスプリントゴール達成を優先して技術負債を積んだ結果、共有コードベースが荒廃し全チームの生産性が崩壊する</text>
+</g>
+<g class="toc-show-80">
+  <rect x="130" y="500" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="523" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">技術負債を「チームの問題」ではなく「組織の共有資源」として管理し、返済の仕組みを全チーム共通で設計する</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-6">ループを読み解く</h3>
+
+<h4 id="r-ループ左（チームaの成果エンジン）">R ループ左（チームAの成果エンジン）</h4>
+
+<p>チームAがスプリントゴール達成を最優先する → テストを省略し、リファクタリングを後回しにして機能を実装する → ベロシティが上がる → 「生産性が高い」と評価される → さらにスプリントゴール達成に邁進する</p>
+
+<p>チームAにとっては合理的な行動だ。スプリントゴールを達成すればステークホルダーは喜び、ベロシティが上がれば「高性能なチーム」と評価される。技術負債は「次のスプリントで」「余裕ができたら」対処すればいい。<strong>今このスプリントの成果</strong>を出すことが最も報われる。</p>
+
+<h4 id="r-ループ右（チームbの成果エンジン）">R ループ右（チームBの成果エンジン）</h4>
+
+<p>チームBもまったく同じ論理で動いている。チームAが高いベロシティを出しているのを見れば、「うちも負けられない」とさらにスピード重視に傾く。<strong>個別の合理性が、全体の非合理を生む</strong>——これが共有地の悲劇の核心だ。</p>
+
+<h4 id="b-ループ（共有コードベースの荒廃）">B ループ（共有コードベースの荒廃）</h4>
+
+<p>チームAとBが技術負債を積み続ける → 共有コードベースの複雑性が累積する → <strong>ビルドが頻繁に壊れる、テストが信頼できない、変更の影響範囲が予測できない</strong> → 全チームの開発速度が低下する → 各チームのベロシティが落ちる</p>
+
+<p>ここに<strong>遅延</strong>がある。技術負債の影響はすぐには見えない。最初のスプリントでテストを省略しても問題は起きない。3スプリント目でも大丈夫かもしれない。しかし半年後、共有ライブラリの変更が3チームのビルドを同時に壊し、CI/CDパイプラインが1日中赤いままになる。しかもチームAから見れば、コードベースの荒廃が自チームのせいなのかチームBのせいなのか区別できない。「自分たちだけ品質を守っても、他のチームが汚したら意味がない」という囚人のジレンマが生まれる。</p>
+
+<h3 id="段階的に進行する症状-6">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 各チームの快走</div>
+<ul><li>複数のスクラムチームが同一コードベースで並行開発する</li><li>各チームがスプリントゴール達成率を競い、ベロシティが順調に伸びる</li><li>技術負債の返済は「各チームの裁量で」と曖昧に任されている</li><li>「みんな順調だね」と楽観的な空気が支配する</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 見えない蓄積</div>
+<ul><li>マージコンフリクトが頻発し、統合に時間がかかり始める</li><li>「誰がこのコードを壊したの？」という犯人捜しが始まる</li><li>CI/CDのビルド時間が倍増し、フィードバックが遅くなる</li><li>各チームが「他のチームのコードには触らない」と領域を固定化する</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 共有資源の劣化</div>
+<ul><li>共有ライブラリの変更が複数チームのビルドを同時に壊す</li><li>テストスイートの信頼性が下がり、「赤いテストは無視」が常態化する</li><li>リリース作業が丸一日かかるようになる</li><li>「品質を守ろう」と提案するチームが「他のチームも守らないと意味がない」と諦める</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 全チームの生産性崩壊</div>
+<ul><li>新機能の開発より既存コードの修正に時間がかかるようになる</li><li>ベロシティが全チームで同時に急落する</li><li>「コードベースを分割しよう」「マイクロサービスにしよう」という大規模リアーキテクチャの議論が始まる</li><li>技術負債の返済に数ヶ月〜数年の見積もりが出され、誰も着手できない</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>共有地の悲劇に対するレバレッジは、個々のチームに「品質を守れ」と説教することではありません。<strong>共有資源の管理ルールを全チーム共通で設計する</strong>ことです。具体的には、全チーム共通のDoneの定義にコード品質基準を含める、スプリントキャパシティの一定割合を技術負債返済に強制的に割り当てる、共有コードベースの品質指標を全チームのKPIに組み込む。「自分だけ守っても損」という構造を、「全員でルールを守れば全員が得をする」という構造に変えることが鍵です。</p>
+</div>
+</div>
+</article>
+
+<footer>
+  <div class="container">
+    <p>Generated by md2html / 2026-02-23</p>
+  </div>
+</footer>
+
+</body>
+</html>
