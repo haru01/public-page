@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>なぜAIは組織を速くしないのか——5つの構造的罠</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+
+  :root {
+    --bg: #fafaf9;
+    --text: #1c1917;
+    --text-secondary: #57534e;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --border: #e7e5e4;
+    --card-bg: #ffffff;
+    --pm-color: #2563eb;
+    --reviewer-color: #059669;
+    --lead-color: #7c3aed;
+    --insight-bg: #fffbeb;
+    --insight-border: #f59e0b;
+    --code-bg: #f5f5f4;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 16px;
+  }
+  .container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #fff;
+    padding: 64px 0 56px;
+  }
+  header .container { text-align: center; }
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  header .subtitle {
+    font-size: 15px;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+  header .meta {
+    margin-top: 24px;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  /* Article */
+  article { padding: 48px 0 80px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 48px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--text);
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 36px 0 14px;
+    color: var(--text);
+  }
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 28px 0 12px;
+    color: var(--text);
+  }
+  p { margin-bottom: 16px; }
+  ul, ol { margin: 0 0 16px 24px; }
+  li { margin-bottom: 6px; }
+
+  /* Diagram container */
+  .diagram {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  /* SVG diagram */
+  .diagram svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Table */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 16px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .code-block-header {
+    background: #e7e5e4;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .code-block-lang {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .code-block-content {
+    padding: 20px;
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .code-block-content pre {
+    margin: 0;
+    white-space: pre;
+  }
+  .code-block-content code {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+  }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid #cbd5e1;
+    padding: 8px 20px;
+    margin: 16px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Links */
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s;
+  }
+  a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  /* Material Symbols Outlined */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.2em;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Separator */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin: 32px 0;
+    box-shadow: var(--shadow);
+  }
+  .toc-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  .toc > ol > li {
+    counter-increment: toc;
+    margin-bottom: 4px;
+  }
+  .toc > ol > li::before {
+    content: counter(toc) ".";
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+  .toc > ol > li > ol {
+    margin: 2px 0 6px 24px;
+    counter-reset: toc-sub;
+  }
+  .toc > ol > li > ol > li {
+    counter-increment: toc-sub;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  .toc > ol > li > ol > li::before {
+    content: counter(toc-sub) ".";
+    color: var(--text-secondary);
+    margin-right: 4px;
+  }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  /* Mermaid diagram */
+  .mermaid-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .mermaid-wrapper .diagram-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* SVG embed */
+  .svg-embed {
+    margin: 32px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .svg-embed svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Footer */
+  footer {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .card-header.pm { color: var(--pm-color); }
+  .card-header.reviewer { color: var(--reviewer-color); }
+  .card p { font-size: 14px; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul { font-size: 14px; margin: 0 0 8px 20px; padding: 0; }
+  .card li { margin-bottom: 4px; }
+  .card ul:last-child { margin-bottom: 0; }
+  .insight {
+    background: var(--insight-bg);
+    border-left: 4px solid var(--insight-border);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .insight-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--insight-border);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .insight p:last-child { margin-bottom: 0; }
+  .proscons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 640px) { .proscons-grid { grid-template-columns: 1fr; } }
+  .proscons-card {
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .proscons-card.pros {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+  .proscons-card.cons {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .proscons-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .proscons-header.pros { color: #16a34a; }
+  .proscons-header.cons { color: #dc2626; }
+  .proscons-card ul { margin: 0 0 0 20px; }
+  .proscons-card li { font-size: 14px; margin-bottom: 6px; }
+  .proscons-card li:last-child { margin-bottom: 0; }
+  .proscons-card p { font-size: 14px; margin-bottom: 8px; }
+  .proscons-card p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>なぜAIは組織を速くしないのか——5つの構造的罠</h1>
+    
+    <p class="meta">2026-02-27</p>
+  </div>
+</header>
+
+<article>
+<div class="container">
+<nav class="toc">
+<p class="toc-title">目次</p>
+<ol>
+<li><a href="#あなたの組織で、こんなことが起きていませんか">あなたの組織で、こんなことが起きていませんか</a>
+<li><a href="#罠1-成長の限界-「個人の速さ」が天井にぶつかる">罠1: 成長の限界——「個人の速さ」が天井にぶつかる</a>
+<ol>
+<li><a href="#ループを読み解く">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#罠2-問題のすり替わり-aiツールという「対症療法」への依存">罠2: 問題のすり替わり——AIツールという「対症療法」への依存</a>
+<ol>
+<li><a href="#ループを読み解く-1">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-1">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#罠3-成長と投資不足-ai時代の「基準のなし崩し」">罠3: 成長と投資不足——AI時代の「基準のなし崩し」</a>
+<ol>
+<li><a href="#ループを読み解く-2">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-2">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#罠4-成功の限界-ai格差が組織を分断する">罠4: 成功の限界——AI格差が組織を分断する</a>
+<ol>
+<li><a href="#ループを読み解く-3">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-3">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#罠5-バラバラの目標-「速く作る」と「正しいものを作る」の綱引き">罠5: バラバラの目標——「速く作る」と「正しいものを作る」の綱引き</a>
+<ol>
+<li><a href="#ループを読み解く-4">ループを読み解く</a></li>
+<li><a href="#段階的に進行する症状-4">段階的に進行する症状</a></li>
+</ol></li>
+<li><a href="#なぜこうなるのか-5つの罠が絡み合う構造">なぜこうなるのか——5つの罠が絡み合う構造</a>
+<li><a href="#レバレッジポイント-どこを変えれば流れが変わるか">レバレッジポイント——どこを変えれば流れが変わるか</a>
+<ol>
+<li><a href="#レバレッジ-1-計測基準を「個人の速さ」から「組織のフロー」に変える">レバレッジ 1: 計測基準を「個人の速さ」から「組織のフロー」に変える</a></li>
+<li><a href="#レバレッジ-2-aiの投資先を「実装-個人」から「接続・調整層」へシフトする">レバレッジ 2: AIの投資先を「実装×個人」から「接続・調整層」へシフトする</a></li>
+<li><a href="#レバレッジ-3-aiとセットで「組織の基礎体力」に投資する">レバレッジ 3: AIとセットで「組織の基礎体力」に投資する</a></li>
+<li><a href="#レバレッジ-4-ai活用の知見を「属人化」から「組織の仕組み」に変える">レバレッジ 4: AI活用の知見を「属人化」から「組織の仕組み」に変える</a></li>
+<li><a href="#レバレッジ-5-aiで浮いた時間を「もっと作る」ではなく「何を作るかの検証」に使う">レバレッジ 5: AIで浮いた時間を「もっと作る」ではなく「何を作るかの検証」に使う</a></li>
+</ol></li>
+<li><a href="#明日からできること-アクション案">明日からできること——アクション案</a>
+<ol>
+<li><a href="#アクション-1-バリューストリームの「待ち時間」を可視化する">アクション 1: バリューストリームの「待ち時間」を可視化する</a></li>
+<li><a href="#アクション-2-dora-metricsの4指標を週次で追跡し始める">アクション 2: DORA Metricsの4指標を週次で追跡し始める</a></li>
+<li><a href="#アクション-3-ai投資とセットで「接続・調整」の改善テーマを1つ選ぶ">アクション 3: AI投資とセットで「接続・調整」の改善テーマを1つ選ぶ</a></li>
+<li><a href="#アクション-4-ai活用の「成功事例」を仕組みとして組織に展開する">アクション 4: AI活用の「成功事例」を仕組みとして組織に展開する</a></li>
+<li><a href="#アクション-5-aiで浮いた時間の20-を「何を作るか」の検証に再投資する">アクション 5: AIで浮いた時間の20%を「何を作るか」の検証に再投資する</a></li>
+</ol></li>
+<li><a href="#おわりに-構造に気づいたあなたへ">おわりに——構造に気づいたあなたへ</a>
+<li><a href="#参考">参考</a>
+</li>
+</ol>
+</nav>
+
+<h2 id="あなたの組織で、こんなことが起きていませんか">あなたの組織で、こんなことが起きていませんか</h2>
+
+<p>あなたの組織で、こんなことが起きていませんか。</p>
+
+<p>「AIツールを入れたら、個人の開発スピードは確かに上がった。体感で2倍は速くなったと思う。でも——組織全体のデリバリーは、なぜか速くなっていない。」</p>
+
+<p>これは、あなただけの感覚ではありません。</p>
+
+<p>DORA 2024の調査では、AI支援ツールを使った個人の体感速度は+25%向上した一方、組織のデリバリー安定性はむしろ<strong>-19%低下</strong>しました。CEO・CFOの80%が「AI導入が生産性に影響していない」と回答しています。</p>
+
+<p>杉野和馬さん（LayerX）は、この逆説を「熱狂と齟齬」と呼びました。個人は速くなった。でも組織は速くなっていない。この矛盾の背後には、<strong>5つの構造的な罠</strong>が隠れています。</p>
+
+<p>一緒に、その構造を見ていきましょう。</p>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>個人が速くなれば組織も速くなる——この直感は、残念ながら正しくありません。個人と組織の間には「接続・調整層」という見えない天井があり、ここを素通りしてAIの効果が組織に届くことはないのです。</p>
+</div>
+
+<h2 id="罠1-成長の限界-「個人の速さ」が天井にぶつかる">罠1: 成長の限界——「個人の速さ」が天井にぶつかる</h2>
+
+<div class="diagram">
+  <div class="diagram-title">AI個人生産性の成長と「接続・調整層」の天井</div>
+  <svg viewBox="0 0 760 540" xmlns="http://www.w3.org/2000/svg" style="max-width:720px; --dur: 12s;">
+<defs>
+  <marker id="ltg-rarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="ltg-barr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+</defs>
+
+<style>
+  /* タイトル */
+  .ltg-title { animation: ltg-title var(--dur) infinite; }
+  @keyframes ltg-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* パフォーマンスボックス（強調アニメーション付き） */
+  .ltg-box-perf { transform-origin: 380px 98px; animation: ltg-box-p var(--dur) infinite; }
+  .ltg-perf-rect { animation: ltg-perf-rect-anim var(--dur) infinite; }
+
+  @keyframes ltg-box-p {
+    0%, 59% { transform: scale(1); opacity: 1; }
+    60%, 75% { transform: scale(1.05); opacity: 1; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes ltg-perf-rect-anim {
+    0%, 59% { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    60%, 75% { fill: #fef3c7; stroke: #d97706; stroke-width: 4; }
+    80%, 95% { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    100% { fill: #eff6ff; }
+  }
+
+  /* path-1: 努力→パフォーマンス (5-10%) */
+  .ltg-path-1 { stroke-dasharray: 600; animation: ltg-d-1 var(--dur) infinite; }
+  @keyframes ltg-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 努力ボックス出現 (10%) */
+  .ltg-show-10 { animation: ltg-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes ltg-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: パフォーマンス→努力 (15-20%) */
+  .ltg-path-2 { stroke-dasharray: 600; animation: ltg-d-2 var(--dur) infinite; }
+  @keyframes ltg-d-2 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* R-loopラベル出現 (20%) */
+  .ltg-show-20 { transform-origin: 230px 200px; animation: ltg-s-20 var(--dur) infinite; opacity: 0; }
+  @keyframes ltg-s-20 {
+    0%, 19% { opacity: 0; transform: scale(0.5); }
+    20%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: パフォーマンス→制約 (30-35%) */
+  .ltg-path-3 { stroke-dasharray: 600; animation: ltg-d-3 var(--dur) infinite; }
+  @keyframes ltg-d-3 {
+    0%, 29% { stroke-dashoffset: 600; opacity: 0; }
+    30% { opacity: 1; stroke-dashoffset: 600; }
+    35%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 制約ボックス出現 (35%) */
+  .ltg-show-35 { animation: ltg-s-35 var(--dur) infinite; opacity: 0; }
+  @keyframes ltg-s-35 {
+    0%, 34% { opacity: 0; transform: translateY(10px); }
+    35%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: 制約→パフォーマンス (40-45%) */
+  .ltg-path-4 { stroke-dasharray: 600; animation: ltg-d-4 var(--dur) infinite; }
+  @keyframes ltg-d-4 {
+    0%, 39% { stroke-dashoffset: 600; opacity: 0; }
+    40% { opacity: 1; stroke-dashoffset: 600; }
+    45%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B-loopラベル出現 (45%) */
+  .ltg-show-45 { transform-origin: 530px 200px; animation: ltg-s-45 var(--dur) infinite; opacity: 0; }
+  @keyframes ltg-s-45 {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* オプションテキストの出現 (80%) */
+  .ltg-show-80 { animation: ltg-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes ltg-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="ltg-title" x="380" y="40" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI個人生産性の成長と「接続・調整層」の天井</text>
+
+<!-- パフォーマンスボックス（強調アニメーション） -->
+<g class="ltg-box-perf">
+  <rect class="ltg-perf-rect" x="280" y="70" width="200" height="56" rx="10"/>
+  <text x="380" y="92" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">個人の生産性</text>
+  <text x="380" y="110" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">コード生産量・個人タスク完了速度の向上</text>
+</g>
+
+<!-- path-1: 努力→パフォーマンス + 極性「+」 -->
+<g class="ltg-path-1">
+  <path d="M 160 280 C 140 180, 260 140, 300 126" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ltg-rarr)"/>
+  <text x="230" y="170" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 努力ボックス -->
+<g class="ltg-show-10">
+  <rect x="60" y="280" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="160" y="302" text-anchor="middle" font-size="11" font-weight="700" fill="#1d4ed8" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツール活用</text>
+  <text x="160" y="320" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツール活用による個人の開発加速</text>
+</g>
+
+<!-- path-2: パフォーマンス→努力 + 極性「+」 -->
+<g class="ltg-path-2">
+  <path d="M 320 126 C 360 180, 240 220, 200 280" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ltg-rarr)"/>
+  <text x="280" y="240" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- R-loopラベル -->
+<g class="ltg-show-20">
+  <circle cx="230" cy="200" r="18" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="230" y="206" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- path-3: パフォーマンス→制約 + 極性「+」 -->
+<g class="ltg-path-3">
+  <path d="M 440 126 C 400 180, 520 220, 560 280" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#ltg-rarr)"/>
+  <text x="480" y="240" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 制約ボックス -->
+<g class="ltg-show-35">
+  <rect x="500" y="280" width="200" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="600" y="302" text-anchor="middle" font-size="11" font-weight="700" fill="#b91c1c" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">接続・調整層のボトルネック</text>
+  <text x="600" y="320" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">接続・調整層（L3）の処理能力——レビュー待ち・仕様確認・意思決定の遅延</text>
+</g>
+
+<!-- path-4: 制約→パフォーマンス + 極性「−」 -->
+<g class="ltg-path-4">
+  <path d="M 600 280 C 620 180, 500 140, 460 126" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#ltg-barr)"/>
+  <text x="530" y="170" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- B-loopラベル -->
+<g class="ltg-show-45">
+  <circle cx="530" cy="200" r="18" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="530" y="206" text-anchor="middle" font-size="14" font-weight="700" fill="#b91c1c" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<g class="ltg-show-80">
+  <rect x="130" y="400" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="423" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">個人が速くなるほど、レビュー待ち・仕様確認待ち・意思決定待ちが増え、「待ち時間」が支配的になる。AIは個人の「作業時間」を圧縮したが、「待ち時間」には一切手をつけていない。</text>
+</g>
+<g class="ltg-show-80">
+  <rect x="130" y="450" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="473" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIの投資先を「個人の作業速度」から「接続・調整層の処理能力」へシフトする。レビュープロセス、意思決定構造、チーム間の情報共有を再設計する。</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く">ループを読み解く</h3>
+
+<h4 id="r-ループ（個人生産性のエンジン）">R ループ（個人生産性のエンジン）</h4>
+
+<p>AIツールを使う → 個人のコード生産量が増える → 「AIすごい！もっと活用しよう」 → さらにAIツールへの投資と習熟が進む → 個人の速度がさらに上がる</p>
+
+<p>このループが最初の「熱狂」を生みます。GitHub Copilotを入れれば、コーディング速度は体感で2倍になる。ChatGPTに設計相談すれば、調査時間が半分になる。個人レベルでは、AIの効果は疑いようがありません。だからこそ、組織はAIツールの導入にアクセルを踏み続けます。</p>
+
+<h4 id="b-ループ（見えない天井）">B ループ（見えない天井）</h4>
+
+<p>個人の生産量が増える → プルリクエストが増える → レビュー待ちの行列が長くなる → 仕様の確認待ち・意思決定待ちが増える → <strong>デリバリーのリードタイムは変わらない（むしろ悪化する）</strong> → 「もっとAIを使って個人を速くしなければ」とR ループを加速させる</p>
+
+<p>ここに<strong>遅延</strong>があります。AIツールを入れた直後は成果が見えます。しかし数ヶ月経つと、バリューストリームの中で「待ち時間」が支配的になっていることに気づきます。杉野さんのスライドが指摘する<strong>6層モデル</strong>では、L2（個人生産性）とL4（チーム・プロセス）の間にある<strong>L3（接続・調整層）</strong>が最大のボトルネックです。</p>
+
+<p>個人がどれだけ速くコードを書いても、レビュー待ちが3日かかれば、デリバリーは3日遅い。仕様確認に1週間かかれば、AI生成コードの品質は無関係です。<strong>個人の「作業時間」をいくら圧縮しても、「待ち時間」が変わらなければ、全体のリードタイムは変わらない。</strong> これが、TOC（制約理論）でいう「非制約の改善は全体を改善しない」という原則そのものですね。</p>
+
+<h3 id="段階的に進行する症状">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 熱狂の始まり</div>
+<ul><li>AIツールを導入し、個人の体感速度が劇的に向上する</li><li>「コーディングが2倍速くなった！」という声がチームに広がる</li><li>経営層が「全社的にAIを導入しよう」と旗を振る</li><li>ツール利用率がKPIになり、導入数が成果指標になる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 違和感の兆し</div>
+<ul><li>プルリクエストの数が増えるが、マージまでの時間が延びる</li><li>「コードは書けたけど、レビューが回ってこない」という声が出始める</li><li>AIが生成したコードの品質にばらつきがあり、レビュー負荷が上がる</li><li>「速く作れるけど、速く届けられない」というギャップに気づく人が出る</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 成長の鈍化</div>
+<ul><li>デリバリーのリードタイムが改善しないことが数値で見え始める</li><li>「AIを使っているのになぜ遅いのか」と経営層が疑問を持つ</li><li>チームが「もっとAIを使えばいい」と間違った方向に力を入れる</li><li>バリューストリーム上の「待ち時間」が全体の70%以上を占める</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 熱狂の失望</div>
+<ul><li>「AI導入は効果がなかった」という結論に飛びつく</li><li>ツールへの投資が縮小され、使える人と使えない人の格差だけが残る</li><li>本質的なボトルネック（接続・調整層）は手つかずのまま</li><li>次の「銀の弾丸」を探し始める</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>あなたの組織が今 Stage 2〜3 にいるなら、それは「AIが使えない」のではありません。AIの効果が「接続・調整層」という天井にぶつかっているだけです。天井の存在に気づいたこと自体が、次の一手を打つための重要な一歩です。</p>
+</div>
+
+<h2 id="罠2-問題のすり替わり-aiツールという「対症療法」への依存">罠2: 問題のすり替わり——AIツールという「対症療法」への依存</h2>
+
+<div class="diagram">
+  <div class="diagram-title">AIツール導入という「問題のすり替わり」</div>
+  <svg viewBox="0 0 760 580" xmlns="http://www.w3.org/2000/svg" style="max-width:720px; --dur: 12s;">
+<defs>
+  <marker id="stb-q-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#d97706"/>
+  </marker>
+  <marker id="stb-f-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="stb-s-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+
+  <mask id="stb-delay-mask">
+    <path d="M 320 380 C 280 350, 280 310, 320 276" fill="none" stroke="white" stroke-width="6" class="stb-mask-draw" />
+  </mask>
+</defs>
+
+<style>
+  /* タイトル */
+  .stb-title { animation: stb-title var(--dur) infinite; }
+  @keyframes stb-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 1. 問題ボックス（常時表示、Rループ完成時に強調） */
+  .box-problem { transform-origin: 360px 248px; animation: stb-box-p var(--dur) infinite; }
+  .prob-rect { animation: stb-prob-rect var(--dur) infinite; }
+
+  @keyframes stb-box-p {
+    0%, 69% { transform: scale(1); opacity: 1; }
+    70%, 85% { transform: scale(1.05); opacity: 1; } /* 中毒で悪化 */
+    90% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes stb-prob-rect {
+    0%, 69% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    70%, 85% { fill: #fee2e2; stroke: #b91c1c; stroke-width: 4; } /* 警告色 */
+    90%, 95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* 2. 問題 → 応急処置への矢印 */
+  .stb-path-1 { stroke-dasharray: 600; animation: stb-d-1 var(--dur) infinite; }
+  @keyframes stb-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 3. 応急処置ボックスの出現 */
+  .stb-show-10 { animation: stb-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 4. 応急処置 → 問題への矢印（上Bループ完成） */
+  .stb-path-2 { stroke-dasharray: 600; animation: stb-d-2 var(--dur) infinite; }
+  @keyframes stb-d-2 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 5. 上バランシングループ（B）の出現 */
+  .stb-show-20 { transform-origin: 360px 168px; animation: stb-s-20 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-20 {
+    0%, 19% { opacity: 0; transform: scale(0.5); }
+    20%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 6. 問題 → 根本解決への矢印 */
+  .stb-path-3 { stroke-dasharray: 600; animation: stb-d-3 var(--dur) infinite; }
+  @keyframes stb-d-3 {
+    0%, 24% { stroke-dashoffset: 600; opacity: 0; }
+    25% { opacity: 1; stroke-dashoffset: 600; }
+    30%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 7. 根本解決ボックスの出現 */
+  .stb-show-30 { animation: stb-s-30 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-30 {
+    0%, 29% { opacity: 0; transform: translateY(10px); }
+    30%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 8. 根本解決 → 問題への矢印（遅延表現のためマスクでゆっくり描画） */
+  .stb-mask-draw { stroke-dasharray: 600; animation: stb-d-mask var(--dur) infinite; }
+  @keyframes stb-d-mask {
+    0%, 34% { stroke-dashoffset: 600; }
+    50%, 100% { stroke-dashoffset: 0; }
+  }
+  .stb-path-4 { mask: url(#stb-delay-mask); animation: stb-p-4 var(--dur) infinite; }
+  @keyframes stb-p-4 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 9. 遅延マークの出現 */
+  .stb-show-35 { animation: stb-s-35 var(--dur) infinite; opacity: 0; }
+  .stb-delay-line { animation: stb-dl var(--dur) infinite; }
+  @keyframes stb-s-35 {
+    0%, 34% { opacity: 0; }
+    35%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes stb-dl {
+    35%, 40% { stroke-width: 4; stroke: #ef4444; }
+    41%, 100% { stroke-width: 2.5; stroke: #2563eb; }
+  }
+
+  /* 10. 下バランシングループ（B）の出現 */
+  .stb-show-45 { transform-origin: 360px 328px; animation: stb-s-45 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-45 {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 11. 応急処置 → 副作用への矢印 */
+  .stb-path-5 { stroke-dasharray: 600; animation: stb-d-5 var(--dur) infinite; }
+  @keyframes stb-d-5 {
+    0%, 49% { stroke-dashoffset: 600; opacity: 0; }
+    50% { opacity: 1; stroke-dashoffset: 600; }
+    55%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 12. 副作用ボックスの出現 */
+  .stb-show-55 { animation: stb-s-55 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-55 {
+    0%, 54% { opacity: 0; transform: translateY(10px); }
+    55%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* 13. 副作用 → 根本解決への矢印 */
+  .stb-path-6 { stroke-dasharray: 600; animation: stb-d-6 var(--dur) infinite; }
+  @keyframes stb-d-6 {
+    0%, 59% { stroke-dashoffset: 600; opacity: 0; }
+    60% { opacity: 1; stroke-dashoffset: 600; }
+    65%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 14. 自己強化ループ（R）の出現 */
+  .stb-show-65 { transform-origin: 510px 248px; animation: stb-s-65 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-65 {
+    0%, 64% { opacity: 0; transform: scale(0.5); }
+    65%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* 15. オプションテキストの出現 */
+  .stb-show-75 { animation: stb-s-75 var(--dur) infinite; opacity: 0; }
+  @keyframes stb-s-75 {
+    0%, 74% { opacity: 0; transform: translateY(5px); }
+    75%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="stb-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツール導入という「問題のすり替わり」</text>
+
+<!-- 1. 問題ボックス -->
+<g class="box-problem">
+  <rect class="prob-rect" x="240" y="220" width="240" height="56" rx="10" />
+  <text x="360" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">生産性の課題</text>
+  <text x="360" y="260" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織の開発生産性が低い・デリバリーが遅い</text>
+</g>
+
+<!-- 2. 問題 → 応急処置パス -->
+<g class="stb-path-1">
+  <path d="M 400 220 C 440 180, 440 140, 400 116" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#stb-q-arr)"/>
+</g>
+
+<!-- 3. 応急処置ボックス + 極性「+」 -->
+<g class="stb-show-10">
+  <rect x="240" y="60" width="240" height="56" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="82" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツール導入（対症療法）</text>
+  <text x="360" y="100" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツールの導入・個人の作業効率化</text>
+  <text x="435" y="172" text-anchor="middle" font-size="16" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 4. 応急処置 → 問題パス -->
+<g class="stb-path-2">
+  <path d="M 320 116 C 280 140, 280 180, 320 220" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#stb-q-arr)"/>
+</g>
+
+<!-- 5. 上Bループ + 極性「−」 -->
+<g class="stb-show-20">
+  <circle cx="360" cy="168" r="16" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="360" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+  <text x="285" y="172" text-anchor="middle" font-size="18" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 6. 問題 → 根本解決パス -->
+<g class="stb-path-3">
+  <path d="M 400 276 C 440 310, 440 350, 400 380" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#stb-f-arr)"/>
+</g>
+
+<!-- 7. 根本解決ボックス + 極性「+」 -->
+<g class="stb-show-30">
+  <rect x="240" y="380" width="240" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="402" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織基礎体力の強化（根本解決）</text>
+  <text x="360" y="420" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織の基礎体力強化（プロセス設計・組織設計・計測基盤の整備）</text>
+  <text x="435" y="332" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 8. 根本解決 → 問題パス（遅延、マスク描画） -->
+<g class="stb-path-4">
+  <path d="M 320 380 C 280 350, 280 310, 320 276" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#stb-f-arr)"/>
+</g>
+
+<!-- 9. 遅延マーク + 極性「−」 -->
+<g class="stb-show-35">
+  <line class="stb-delay-line" x1="282" y1="336" x2="302" y2="321" />
+  <line class="stb-delay-line" x1="289" y1="344" x2="309" y2="329" />
+  <text x="240" y="336" text-anchor="end" font-size="10" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">数四半期〜数年</text>
+  <text x="285" y="332" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 10. 下Bループ -->
+<g class="stb-show-45">
+  <circle cx="360" cy="328" r="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="333" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- 11. 応急処置 → 副作用パス -->
+<g class="stb-path-5">
+  <path d="M 480 88 C 640 88, 640 160, 640 220" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#stb-s-arr)"/>
+</g>
+
+<!-- 12. 副作用ボックス + 極性「+」 -->
+<g class="stb-show-55">
+  <rect x="540" y="220" width="200" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="640" y="242" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">既存課題の増幅</text>
+  <text x="640" y="260" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">既存の組織課題がAIによって増幅される（DORA 2025「AIはミラーとマルチプライヤー」）</text>
+  <text x="655" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 13. 副作用 → 根本解決パス -->
+<g class="stb-path-6">
+  <path d="M 640 276 C 640 360, 560 408, 480 408" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#stb-s-arr)"/>
+</g>
+
+<!-- 14. Rループ + 極性「−」 -->
+<g class="stb-show-65">
+  <circle cx="510" cy="248" r="18" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="510" y="254" text-anchor="middle" font-size="14" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+  <text x="655" y="360" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<g class="stb-show-75">
+  <rect x="130" y="470" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="493" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIは組織の基礎体力を映す鏡だ。基盤の厚い組織ではAIが正の相乗効果を生み、基盤の薄い組織ではAIが既存問題を増幅する。</text>
+</g>
+<g class="stb-show-75">
+  <rect x="130" y="520" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="543" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツール導入と同時に、組織基礎体力（CI/CD、プロセス設計、DORA Metrics、チーム構造）への投資を「セット」で行う。</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-1">ループを読み解く</h3>
+
+<h4 id="b-ループ上段（aiツールという即効薬）">B ループ上段（AIツールという即効薬）</h4>
+
+<p>組織のデリバリーが遅い → 「AIツールを入れれば速くなる」 → AIツールを全社導入する → 個人の作業速度が上がる → 「生産性が上がった（気がする）」 → 問題が解決したように見える</p>
+
+<p>このループは魅力的です。AIツールの導入は比較的簡単で、効果も即座に体感できる。経営層への報告も「ツール利用率90%達成」と明快です。だからこそ、組織はこの手段に繰り返し手を伸ばすのです。</p>
+
+<h4 id="b-ループ下段（組織基礎体力という地道な道）">B ループ下段（組織基礎体力という地道な道）</h4>
+
+<p>組織のデリバリーが遅い → CI/CDの整備、プロセス設計の見直し、チーム構造の再編、計測基盤の構築に取り組む → 組織のデリバリー能力が根本的に向上する → 安定したデリバリーが実現する</p>
+
+<p>杉野さんが示した「組織の基礎体力」には、自動化（CI/CD、テスト自動化、IaC）、プロセス設計（アジャイル、WIP制限）、組織設計（チーム構造、知識共有）、計測（DORA Metrics、バリューストリームマッピング）が含まれます。これらは効果が出るまでに<strong>数四半期から数年</strong>かかります。しかも、「プロセスを改善しました」は「AIを入れました」ほどわかりやすい成果報告になりません。</p>
+
+<p>だからこそ、根本解決はいつも後回しにされます。</p>
+
+<h4 id="r-ループ（増幅の構造-最も危険なループ）">R ループ（増幅の構造——最も危険なループ）</h4>
+
+<p>AIツールに依存する → 組織の基礎体力を鍛える動機が失われる → <strong>基盤の弱い組織にAIが重なる</strong> → AIが既存の問題を増幅する → コードレビューの品質低下、技術負債の加速、チーム間の分断が深まる → デリバリーがさらに遅くなる → 「もっとAIツールを入れなければ」</p>
+
+<p>DORA 2025が指摘した「AIはミラーとマルチプライヤー」という洞察は、まさにこの構造を言い当てています。Booking.comのようにDORA計測×リーンなプロセス×成熟したCI/CDの上にAIを重ねた組織は+16%のスループット向上を実現しました。一方、基盤の薄い組織がAIを入れると、<strong>大量の低品質コードが高速に生成され、レビュー負荷と技術負債が加速する</strong>——AIが「問題を増幅する鏡」として機能してしまうのです。</p>
+
+<h3 id="段階的に進行する症状-1">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 「AIで解決」の期待</div>
+<ul><li>「AIツールを入れれば生産性が上がる」という期待が組織に広がる</li><li>PoC（概念実証）の段階では劇的な効果が見える</li><li>地道なプロセス改善の予算がAIツール導入に振り替えられる</li><li>「まずAIを入れてから、その他は後で」という優先順位が暗黙に決まる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 依存の常態化</div>
+<ul><li>AIツールの利用率がKPIになり、導入そのものが目的化する</li><li>「AIを使っているのにデリバリーが遅い」という矛盾が見え始める</li><li>「もっと高機能なAIツールを入れれば解決する」と次のツールを探す</li><li>組織基盤の弱さは「AIがもっと進化すれば解決する」と先送りされる</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 増幅された問題</div>
+<ul><li>AIが生成する大量のコードがレビューのボトルネックを深刻化させる</li><li>テスト自動化が未整備のままAI生成コードが本番に入り、品質事故が増える</li><li>チーム間の調整コストが増大し、「AIのせいで忙しくなった」という声が出る</li><li>DORA Metricsを計測していないので、何が悪化したのか特定できない</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 「AIは使えない」という誤った結論</div>
+<ul><li>「結局AIは生産性に貢献しない」という結論に組織が飛びつく</li><li>AIツールへの投資が打ち切られる</li><li>組織の基礎体力は相変わらず弱いまま</li><li>次のバズワード（「エージェント型AI」「自律型開発」）に飛びつくサイクルが始まる</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>ここで大事なことは、AIツール導入が「悪い」わけではないということです。問題は、AIツールを「代わりに」入れるのか、組織基盤の上に「重ねて」入れるのか——その順序と組み合わせなのです。</p>
+</div>
+
+<h2 id="罠3-成長と投資不足-ai時代の「基準のなし崩し」">罠3: 成長と投資不足——AI時代の「基準のなし崩し」</h2>
+
+<div class="diagram">
+  <div class="diagram-title">AI活用の期待成長と組織能力への投資不足</div>
+  <svg viewBox="0 0 760 660" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="gui-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="gui-r-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="gui-g-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#16a34a"/>
+  </marker>
+  <marker id="gui-o-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#d97706"/>
+  </marker>
+  <mask id="gui-delay-mask-5">
+    <path d="M 460 256 C 500 256, 500 168, 540 168" fill="none" stroke="white" stroke-width="6" class="gui-mask-draw-5"/>
+  </mask>
+  <mask id="gui-delay-mask-9">
+    <path d="M 360 460 L 360 296" fill="none" stroke="white" stroke-width="6" class="gui-mask-draw-9"/>
+  </mask>
+</defs>
+
+<style>
+  /* タイトル */
+  .gui-title { animation: gui-title var(--dur) infinite; }
+  @keyframes gui-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 需要ボックス（始めから表示） */
+  .gui-box-demand { animation: gui-box-demand var(--dur) infinite; }
+  @keyframes gui-box-demand {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-1: 成長活動→需要 (3-7%) */
+  .gui-path-1 { stroke-dasharray: 600; animation: gui-d-1 var(--dur) infinite; }
+  @keyframes gui-d-1 {
+    0%, 2% { stroke-dashoffset: 600; opacity: 0; }
+    3% { opacity: 1; stroke-dashoffset: 600; }
+    7%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 成長活動ボックス出現 (7%) */
+  .gui-show-7 { animation: gui-s-7 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-7 {
+    0%, 6% { opacity: 0; transform: translateY(10px); }
+    7%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: 需要→成長活動 (7-12%) */
+  .gui-path-2 { stroke-dasharray: 600; animation: gui-d-2 var(--dur) infinite; }
+  @keyframes gui-d-2 {
+    0%, 6% { stroke-dashoffset: 600; opacity: 0; }
+    7% { opacity: 1; stroke-dashoffset: 600; }
+    12%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* R-loopラベル出現 (12%) */
+  .gui-show-loop-r { transform-origin: 190px 110px; animation: gui-loop-r var(--dur) infinite; opacity: 0; }
+  @keyframes gui-loop-r {
+    0%, 11% { opacity: 0; transform: scale(0.5); }
+    12%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: 需要→パフォーマンス 縦下 (15-20%) */
+  .gui-path-3 { stroke-dasharray: 600; animation: gui-d-3 var(--dur) infinite; }
+  @keyframes gui-d-3 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* パフォーマンスボックス出現 (20%) */
+  .gui-show-20 { animation: gui-s-20 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-20 {
+    0%, 19% { opacity: 0; transform: translateY(10px); }
+    20%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: パフォーマンス→需要 縦上 (20-25%) */
+  .gui-path-4 { stroke-dasharray: 600; animation: gui-d-4 var(--dur) infinite; }
+  @keyframes gui-d-4 {
+    0%, 19% { stroke-dashoffset: 600; opacity: 0; }
+    20% { opacity: 1; stroke-dashoffset: 600; }
+    25%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B1-loopラベル出現 (25%) */
+  .gui-show-loop-b1 { transform-origin: 360px 168px; animation: gui-loop-b1 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-loop-b1 {
+    0%, 24% { opacity: 0; transform: scale(0.5); }
+    25%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-5: 遅延パス パフォーマンス→基準 マスクベース (28-38%) */
+  .gui-mask-draw-5 { stroke-dasharray: 600; animation: gui-d-mask-5 var(--dur) infinite; }
+  @keyframes gui-d-mask-5 {
+    0%, 27% { stroke-dashoffset: 600; }
+    38%, 100% { stroke-dashoffset: 0; }
+  }
+  .gui-path-5 { mask: url(#gui-delay-mask-5); animation: gui-p-5 var(--dur) infinite; }
+  @keyframes gui-p-5 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 基準ボックス出現 (30%) + 遅延マーク5赤フラッシュ */
+  .gui-show-30 { animation: gui-s-30 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-30 {
+    0%, 29% { opacity: 0; transform: translateY(10px); }
+    30%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  .gui-show-30-d { animation: gui-s-30-d var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-30-d {
+    0%, 29% { opacity: 0; }
+    30%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .gui-dline-5 { animation: gui-dl-5 var(--dur) infinite; }
+  @keyframes gui-dl-5 {
+    30%, 35% { stroke-width: 4; stroke: #ef4444; }
+    36%, 100% { stroke-width: 2.5; stroke: #dc2626; }
+  }
+
+  /* path-6: パフォーマンス→投資認識 (33-38%) */
+  .gui-path-6 { stroke-dasharray: 600; animation: gui-d-6 var(--dur) infinite; }
+  @keyframes gui-d-6 {
+    0%, 32% { stroke-dashoffset: 600; opacity: 0; }
+    33% { opacity: 1; stroke-dashoffset: 600; }
+    38%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-7: 基準→投資認識 (38-43%) */
+  .gui-path-7 { stroke-dasharray: 600; animation: gui-d-7 var(--dur) infinite; }
+  @keyframes gui-d-7 {
+    0%, 37% { stroke-dashoffset: 600; opacity: 0; }
+    38% { opacity: 1; stroke-dashoffset: 600; }
+    43%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 投資認識ボックス出現 (43%) */
+  .gui-show-43 { animation: gui-s-43 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-43 {
+    0%, 42% { opacity: 0; transform: translateY(10px); }
+    43%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* B2-loopラベル出現 (45%) */
+  .gui-show-loop-b2 { transform-origin: 560px 250px; animation: gui-loop-b2 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-loop-b2 {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-8: 投資認識→投資 (48-53%) */
+  .gui-path-8 { stroke-dasharray: 600; animation: gui-d-8 var(--dur) infinite; }
+  @keyframes gui-d-8 {
+    0%, 47% { stroke-dashoffset: 600; opacity: 0; }
+    48% { opacity: 1; stroke-dashoffset: 600; }
+    53%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 投資ボックス出現 (53%) */
+  .gui-show-53 { animation: gui-s-53 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-53 {
+    0%, 52% { opacity: 0; transform: translateY(10px); }
+    53%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-9: 遅延パス 投資→パフォーマンス マスクベース (55-65%) */
+  .gui-mask-draw-9 { stroke-dasharray: 600; animation: gui-d-mask-9 var(--dur) infinite; }
+  @keyframes gui-d-mask-9 {
+    0%, 54% { stroke-dashoffset: 600; }
+    68%, 100% { stroke-dashoffset: 0; }
+  }
+  .gui-path-9 { mask: url(#gui-delay-mask-9); animation: gui-p-9 var(--dur) infinite; }
+  @keyframes gui-p-9 {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 遅延マーク9赤フラッシュ (55%) */
+  .gui-show-55-d { animation: gui-s-55-d var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-55-d {
+    0%, 54% { opacity: 0; }
+    55%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .gui-dline-9 { animation: gui-dl-9 var(--dur) infinite; }
+  @keyframes gui-dl-9 {
+    55%, 60% { stroke-width: 4; stroke: #ef4444; }
+    61%, 100% { stroke-width: 2.5; stroke: #16a34a; }
+  }
+
+  /* パフォーマンスボックス強調 (65-80%) */
+  .gui-box-perf { transform-origin: 360px 268px; animation: gui-box-p var(--dur) infinite; }
+  @keyframes gui-box-p {
+    0%, 64% { transform: scale(1); opacity: 1; }
+    65%, 80% { transform: scale(1.05); opacity: 1; }
+    85%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .gui-perf-rect { animation: gui-perf-rect-anim var(--dur) infinite; }
+  @keyframes gui-perf-rect-anim {
+    0%, 64% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    65%, 80% { fill: #fee2e2; stroke: #b91c1c; stroke-width: 4; }
+    85%, 95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* オプション表示 (80%) */
+  .gui-show-80 { animation: gui-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes gui-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="gui-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用の期待成長と組織能力への投資不足</text>
+
+<!-- 需要ボックス（始めから表示） -->
+<g class="gui-box-demand">
+  <rect x="260" y="40" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用の期待</text>
+  <text x="360" y="80" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用への期待・導入プレッシャー</text>
+</g>
+
+<!-- 成長活動ボックス (7%出現) + 極性「+」 -->
+<g class="gui-show-7">
+  <rect x="40" y="140" width="200" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="140" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">ツール導入の加速</text>
+  <text x="140" y="180" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIツールの追加導入・利用促進</text>
+</g>
+
+<!-- パフォーマンスボックス (20%出現、65-80%強調) -->
+<g class="gui-show-20 gui-box-perf">
+  <rect class="gui-perf-rect" x="260" y="240" width="200" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="360" y="262" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">実際の組織成果</text>
+  <text x="360" y="280" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">実際のAI活用による組織デリバリー成果</text>
+</g>
+
+<!-- 基準ボックス (30%出現) -->
+<g class="gui-show-30">
+  <rect x="540" y="140" width="200" height="56" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="640" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">成果基準</text>
+  <text x="640" y="180" text-anchor="middle" font-size="11" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織が期待するAI活用の成果基準</text>
+</g>
+
+<!-- 投資の必要性認識ボックス (43%出現) -->
+<g class="gui-show-43">
+  <rect x="540" y="340" width="200" height="56" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="640" y="362" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">基盤投資の必要性</text>
+  <text x="640" y="380" text-anchor="middle" font-size="11" fill="#14532d" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織基盤投資の必要性の認識</text>
+</g>
+
+<!-- 投資ボックス (53%出現) -->
+<g class="gui-show-53">
+  <rect x="260" y="460" width="200" height="56" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="360" y="482" text-anchor="middle" font-size="11" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">組織基盤への投資</text>
+  <text x="360" y="500" text-anchor="middle" font-size="11" fill="#14532d" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">プロセス設計・組織設計・計測基盤への投資</text>
+</g>
+
+<!-- path-1: 成長活動→需要 (3-7%) + 極性「+」 -->
+<g class="gui-path-1">
+  <path d="M 140 140 C 140 68, 200 68, 260 68" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gui-b-arr)"/>
+  <text x="170" y="90" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- path-2: 需要→成長活動 (7-12%) + 極性「+」 -->
+<g class="gui-path-2">
+  <path d="M 300 96 C 300 168, 260 168, 240 168" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gui-b-arr)"/>
+  <text x="280" y="150" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- R-loopラベル (12%出現) -->
+<g class="gui-show-loop-r">
+  <circle cx="190" cy="110" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="190" y="115" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- path-3: 需要→パフォーマンス 縦下 (15-20%) + 極性 -->
+<g class="gui-path-3">
+  <path d="M 330 96 L 330 240" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#gui-b-arr)"/>
+  <text x="315" y="168" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- path-4: パフォーマンス→需要 縦上 (20-25%) + 極性「+」 -->
+<g class="gui-path-4">
+  <path d="M 390 240 L 390 96" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#gui-r-arr)"/>
+  <text x="405" y="168" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B1-loopラベル (25%出現) -->
+<g class="gui-show-loop-b1">
+  <circle cx="360" cy="168" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="360" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- path-5: パフォーマンス→基準 遅延パス (28-38% マスクベース) -->
+<g class="gui-path-5">
+  <path d="M 460 256 C 500 256, 500 168, 540 168" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#gui-r-arr)"/>
+  <text x="500" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 遅延マーク5 (30%赤フラッシュ) -->
+<g class="gui-show-30-d">
+  <line x1="490" y1="218" x2="510" y2="203" stroke="#dc2626" stroke-width="2.5" class="gui-dline-5"/>
+  <line x1="497" y1="225" x2="517" y2="210" stroke="#dc2626" stroke-width="2.5" class="gui-dline-5"/>
+</g>
+
+<!-- path-6: パフォーマンス→投資認識 (33-38%) + 極性 -->
+<g class="gui-path-6">
+  <path d="M 460 280 C 500 280, 500 368, 540 368" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#gui-r-arr)"/>
+  <text x="500" y="315" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- path-7: 基準→投資認識 (38-43%) + 極性「+」 -->
+<g class="gui-path-7">
+  <path d="M 640 196 L 640 340" fill="none" stroke="#d97706" stroke-width="2" marker-end="url(#gui-o-arr)"/>
+  <text x="655" y="270" text-anchor="middle" font-size="16" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B2-loopラベル (45%出現) -->
+<g class="gui-show-loop-b2">
+  <circle cx="560" cy="250" r="14" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+  <text x="560" y="255" text-anchor="middle" font-size="12" font-weight="700" fill="#d97706" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- path-8: 投資認識→投資 (48-53%) + 極性「+」 -->
+<g class="gui-path-8">
+  <path d="M 640 396 C 640 488, 520 488, 460 488" fill="none" stroke="#16a34a" stroke-width="2" marker-end="url(#gui-g-arr)"/>
+  <text x="580" y="475" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- path-9: 投資→パフォーマンス 遅延パス (55-65% マスクベース) + 極性「+」 -->
+<g class="gui-path-9">
+  <path d="M 360 460 L 360 296" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#gui-g-arr)"/>
+  <text x="340" y="380" text-anchor="middle" font-size="16" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 遅延マーク9 (55%赤フラッシュ) -->
+<g class="gui-show-55-d">
+  <line x1="350" y1="380" x2="370" y2="365" stroke="#16a34a" stroke-width="2.5" class="gui-dline-9"/>
+  <line x1="350" y1="388" x2="370" y2="373" stroke="#16a34a" stroke-width="2.5" class="gui-dline-9"/>
+</g>
+
+<!-- B投資ループラベル (45%出現、共通) -->
+<g class="gui-show-loop-b2">
+  <circle cx="430" cy="380" r="14" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="430" y="385" text-anchor="middle" font-size="12" font-weight="700" fill="#16a34a" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<g class="gui-show-80">
+  <rect x="130" y="550" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="573" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI導入の成果が出ないとき、基準を「AIは個人が速くなればOK」に下げてしまうと、組織能力への投資の必要性が消失し、個人の速さと組織の遅さの乖離が永久に固定される。</text>
+</g>
+<g class="gui-show-80">
+  <rect x="130" y="600" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="623" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">「組織のデリバリー速度」をAI導入の成果基準として聖域化し、個人の体感速度ではなくDORA Metricsで効果を計測する。基準を下げるのではなく、基盤への先行投資で現状を引き上げる。</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-2">ループを読み解く</h3>
+
+<h4 id="r-ループ（ai導入の期待エンジン）">R ループ（AI導入の期待エンジン）</h4>
+
+<p>AIへの期待が高まる → AIツールの導入を加速する → 「導入しました」という報告が増える → 社内外の注目が集まる → さらなるAI投資への期待が高まる</p>
+
+<p>このループ自体は悪くありません。AI技術への期待が投資を生み、投資が新しい可能性を開く。問題は、このエンジンが回るスピードに、組織の受け入れ能力が追いつかないことです。</p>
+
+<h4 id="b-ループ1（組織能力の制約）">B ループ1（組織能力の制約）</h4>
+
+<p>AI活用が進む → 組織の基盤（プロセス、計測、チーム構造）が追いつかない → 実際のデリバリー成果が期待を下回る → 期待基準とのギャップが開く → 投資の必要性が認識される → プロセス設計や計測基盤に投資される → <strong>遅延を経て</strong>組織能力が向上する → AI活用の成果が改善する</p>
+
+<p>ここに<strong>致命的な遅延</strong>があります。CI/CDの整備、DORA Metricsの導入、チーム構造の見直し——これらは効果が出るまでに半年から1年かかります。しかも「プロセスを改善しています」は、「新しいAIツールを入れました」ほど経営層にインパクトのある報告になりません。投資判断が先送りされやすい構造があるのです。</p>
+
+<h4 id="b-ループ2（基準のなし崩し-最も危険なループ）">B ループ2（基準のなし崩し——最も危険なループ）</h4>
+
+<p>AI活用の成果が期待を下回る → 「AIの効果は個人の体感速度で測ればいい」と基準を下げる → ギャップが見かけ上縮まる → 「組織基盤への投資は不要」という結論に至る → 投資が行われない → 組織能力は弱いまま固定される</p>
+
+<p>ここが杉野さんの指摘する核心です。スライドの6層モデルで言えば、<strong>L1（ツール導入量）をKPIにしてしまうと、L3〜L5の問題が見えなくなる</strong>のです。「ツール利用率90%」「個人の体感速度+50%」——これらの数字は良い。でも「組織のデリバリー安定性は-19%」という現実は、計測していなければ見えません。</p>
+
+計測していなければ基準を下げていることにすら気づかない。気づかなければ投資の必要性を感じない。感じなければ投資されない。<strong>これが「成長と投資不足」の最も恐ろしい点です。</strong>
+
+<h3 id="段階的に進行する症状-2">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: 期待と熱狂</div>
+<ul><li>「AI導入で生産性2倍」という目標が掲げられる</li><li>ツール導入予算が大幅に確保される</li><li>組織基盤への投資は「AIの効果を見てから」と先送りされる</li><li>個人の体感速度が向上し、「順調だ」という報告が上がる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 成果のギャップと投資の迷い</div>
+<ul><li>組織全体のデリバリー速度が改善しないことに気づき始める</li><li>「まだツールの習熟が足りない」「もっと良いツールがある」と説明される</li><li>組織基盤への投資が提案されるが、「効果が不確実」と承認されにくい</li><li>AIツールの追加導入で問題を解決しようとするサイクルが始まる</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 基準のなし崩し</div>
+<ul><li>「AI生産性は個人レベルで測定すればよい」と基準が暗黙に変更される</li><li>DORA Metricsやバリューストリームマッピングの導入は「過剰な計測」と見なされる</li><li>「ツール利用率」が成果KPIとして定着する</li><li>組織デリバリーの遅さは「AIとは別の問題」として切り離される</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 構造的な停滞</div>
+<ul><li>「AI導入は成功した（個人は速くなった）」と報告されるが、事業成果は変わらない</li><li>組織基盤は弱いまま、AIによって既存問題が増幅され続ける</li><li>「AI生産性」を正確に測る基準を誰も持っていない</li><li>競合他社（Booking.comのように基盤とAIを両輪で回した組織）に決定的な差をつけられる</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>あなたの組織が「AIは個人レベルでは効いている。組織レベルは別の話だ」と言い始めていたら、それは Stage 3 のサインかもしれません。基準が下がっていることに気づいたこと自体が、転換点になりえます。</p>
+</div>
+
+<h2 id="罠4-成功の限界-ai格差が組織を分断する">罠4: 成功の限界——AI格差が組織を分断する</h2>
+
+<div class="diagram">
+  <div class="diagram-title">AI活用格差の固定化——「強者はますます強く」</div>
+  <svg viewBox="0 0 760 460" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="sts-a-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="sts-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+  <marker id="sts-c-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M0 0L10 5L0 10z" fill="#7c3aed"/>
+  </marker>
+</defs>
+
+<style>
+  /* タイトル */
+  .sts-title { animation: sts-title var(--dur) infinite; }
+  @keyframes sts-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 中央ボックス（始めから表示） */
+  .sts-box-center { transform-origin: 380px 168px; animation: sts-box-c var(--dur) infinite; }
+  @keyframes sts-box-c {
+    0%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-1: A-success → 中央への上矢印（5-10%） */
+  .sts-path-1 { stroke-dasharray: 600; animation: sts-d-1 var(--dur) infinite; }
+  @keyframes sts-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A-successボックス出現（10%） */
+  .sts-show-10 { animation: sts-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes sts-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: 中央 → A-successへの下矢印（15-20%） */
+  .sts-path-2 { stroke-dasharray: 600; animation: sts-d-2 var(--dur) infinite; }
+  @keyframes sts-d-2 {
+    0%, 14% { stroke-dashoffset: 600; opacity: 0; }
+    15% { opacity: 1; stroke-dashoffset: 600; }
+    20%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 左R-loopラベル出現（20%） */
+  .sts-show-loop-l { transform-origin: 255px 168px; animation: sts-loop-l var(--dur) infinite; opacity: 0; }
+  @keyframes sts-loop-l {
+    0%, 19% { opacity: 0; transform: scale(0.5); }
+    20%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: B-success → 中央への上矢印（30-35%） */
+  .sts-path-3 { stroke-dasharray: 600; animation: sts-d-3 var(--dur) infinite; }
+  @keyframes sts-d-3 {
+    0%, 29% { stroke-dashoffset: 600; opacity: 0; }
+    30% { opacity: 1; stroke-dashoffset: 600; }
+    35%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B-successボックス出現（35%） */
+  .sts-show-35 { animation: sts-s-35 var(--dur) infinite; opacity: 0; }
+  @keyframes sts-s-35 {
+    0%, 34% { opacity: 0; transform: translateY(10px); }
+    35%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: 中央 → B-successへの下矢印（40-45%） */
+  .sts-path-4 { stroke-dasharray: 600; animation: sts-d-4 var(--dur) infinite; }
+  @keyframes sts-d-4 {
+    0%, 39% { stroke-dashoffset: 600; opacity: 0; }
+    40% { opacity: 1; stroke-dashoffset: 600; }
+    45%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 右R-loopラベル出現（45%） */
+  .sts-show-loop-r { transform-origin: 505px 168px; animation: sts-loop-r var(--dur) infinite; opacity: 0; }
+  @keyframes sts-loop-r {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* A-success強調（60-75%）: scale(1.05), 青く強調 */
+  .sts-box-a { transform-origin: 130px 168px; animation: sts-box-a var(--dur) infinite; }
+  .sts-a-rect { animation: sts-a-rect var(--dur) infinite; }
+  @keyframes sts-box-a {
+    0%, 59% { transform: scale(1); opacity: 1; }
+    60%, 75% { transform: scale(1.05); opacity: 1; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes sts-a-rect {
+    0%, 59% { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    60%, 75% { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 4; }
+    80%, 95% { fill: #eff6ff; stroke: #2563eb; stroke-width: 2; }
+    100% { fill: #eff6ff; }
+  }
+
+  /* B-success縮小（60-75%）: scale(0.95), 薄く */
+  .sts-box-b { transform-origin: 630px 168px; animation: sts-box-b var(--dur) infinite; }
+  .sts-b-rect { animation: sts-b-rect var(--dur) infinite; }
+  @keyframes sts-box-b {
+    0%, 59% { transform: scale(1); opacity: 1; }
+    60%, 75% { transform: scale(0.95); opacity: 0.6; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes sts-b-rect {
+    0%, 59% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    60%, 75% { fill: #fef2f2; stroke: #f87171; stroke-width: 1; }
+    80%, 95% { fill: #fef2f2; stroke: #dc2626; stroke-width: 2; }
+    100% { fill: #fef2f2; }
+  }
+
+  /* オプション表示（80%） */
+  .sts-show-80 { animation: sts-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes sts-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="sts-title" x="380" y="40" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用格差の固定化——「強者はますます強く」</text>
+
+<!-- 1. A-successボックス + 極性「+」（10%出現、60-75%強調） -->
+<g class="sts-show-10 sts-box-a">
+  <rect class="sts-a-rect" x="40" y="140" width="180" height="56" rx="10"/>
+  <text x="130" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIリーダーの成果</text>
+  <text x="130" y="180" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用が得意なチーム・個人の成果と評価</text>
+  <text x="255" y="105" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 2. 中央ボックス（始めから表示） -->
+<g class="sts-box-center">
+  <rect x="290" y="140" width="180" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="380" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">リソース配分の偏り</text>
+  <text x="380" y="180" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI関連の予算・注目・優秀人材の配分</text>
+</g>
+
+<!-- 3. B-successボックス + 極性（35%出現、60-75%縮小） -->
+<g class="sts-show-35 sts-box-b">
+  <rect class="sts-b-rect" x="540" y="140" width="180" height="56" rx="10"/>
+  <text x="630" y="162" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI未活用チームの成果</text>
+  <text x="630" y="180" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用が進まないチーム・個人の成果（停滞）</text>
+  <text x="505" y="105" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 4. path-1: A-success → 中央への上矢印 -->
+<g class="sts-path-1">
+  <path d="M 160 140 C 200 90, 310 90, 350 140" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#sts-a-arr)"/>
+</g>
+
+<!-- 5. path-2: 中央 → A-successへの下矢印 + 極性「+」 -->
+<g class="sts-path-2">
+  <path d="M 350 196 C 310 246, 200 246, 160 196" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#sts-c-arr)"/>
+  <text x="255" y="235" text-anchor="middle" font-size="16" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 6. 左R-loopラベル -->
+<g class="sts-show-loop-l">
+  <circle cx="255" cy="168" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="255" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<!-- 7. path-3: B-success → 中央への上矢印 -->
+<g class="sts-path-3">
+  <path d="M 600 140 C 560 90, 450 90, 410 140" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#sts-b-arr)"/>
+</g>
+
+<!-- 8. path-4: 中央 → B-successへの下矢印 + 極性「−」 -->
+<g class="sts-path-4">
+  <path d="M 410 196 C 450 246, 560 246, 600 196" fill="none" stroke="#7c3aed" stroke-width="2" marker-end="url(#sts-c-arr)"/>
+  <text x="505" y="235" text-anchor="middle" font-size="18" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 9. 右R-loopラベル -->
+<g class="sts-show-loop-r">
+  <circle cx="505" cy="168" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="505" y="173" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">R</text>
+</g>
+
+<g class="sts-show-80">
+  <rect x="130" y="320" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="343" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">早期にAIを使いこなした一部のチーム・個人に注目とリソースが集中し、それ以外が取り残される。組織全体のAI成熟度は、最も遅いチームに引きずられる。</text>
+</g>
+<g class="sts-show-80">
+  <rect x="130" y="370" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="393" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用の成果を「個人の能力」ではなく「組織の仕組み」として捉え、成功チームの知見を他チームに移転する構造を作る。リソース配分の基準を「過去の成果」から「組織全体の底上げ」に変える。</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-3">ループを読み解く</h3>
+
+<h4 id="r-ループ左（aiリーダーの好循環）">R ループ左（AIリーダーの好循環）</h4>
+
+<p>あるチームが早期にAIを使いこなす → 生産性の高さが目に見える成果になる → 「あのチームはすごい」と社内で評価される → 優秀なエンジニアが「あのチームで働きたい」と集まる → AI活用のノウハウがさらに蓄積する → 成果がさらに向上する</p>
+
+<p>最初のきっかけは、ほんの小さな差です。たまたまAIに詳しいメンバーがいた。たまたまチームリーダーが新しいツールに前向きだった。しかし「成功の限界（強者はますます強く）」の恐ろしいところは、<strong>この小さな初期差が、リソース配分の偏りを通じて、決定的な格差に変わっていく</strong>ことです。</p>
+
+<h4 id="r-ループ右（取り残されたチームの悪循環）">R ループ右（取り残されたチームの悪循環）</h4>
+
+<p>AIリーダーチームにリソースが集中する → それ以外のチームへのAI投資・支援が減る → AI活用が進まず、旧来の方法で開発を続ける → 成果が相対的に低迷する → 「あのチームはAIに向いていない」と評価される → さらにリソースが削られる</p>
+
+<p>ここで重要なのは、取り残されたチームの低迷は<strong>能力の問題ではなく、構造の帰結</strong>だということです。同じエンジニアでも、AIツールの導入支援があり、使い方を学ぶ時間があり、成功体験を積める環境があれば、活用は進みます。しかし「あのチームに任せよう」という一言で、その環境が奪われてしまう。</p>
+
+<p>杉野さんのスライドが指摘する「実装×個人に投入が集中」という現象は、組織内でも同じように起きています。AI活用が得意な個人・チームにさらなる投入が集中し、それ以外は「まだ早い」と後回しにされる。<strong>部分最適化が全体最適を阻む</strong>——これは6層モデルのL2（個人）とL4（チーム）の間でも再現されている構造なのです。</p>
+
+<h3 id="段階的に進行する症状-3">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: わずかな初期差</div>
+<ul><li>一部のチーム・個人が自発的にAIツールを使い始める</li><li>早期導入者が目覚ましい生産性向上を見せる</li><li>経営層が「AIの成功事例」として社内に紹介する</li><li>他のチームは「うちもそのうち」と静観する</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: リソース配分の傾斜</div>
+<ul><li>AI活用チームに追加予算・新しいツール・優秀な人材が配分される</li><li>「まずは成果の出ているチームに集中投資しよう」という合理的判断</li><li>他のチームのAI導入支援は「次のフェーズで」と先送りされる</li><li>AI活用チームと非活用チームの間で「壁」が生まれ始める</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 格差の固定化</div>
+<ul><li>AI活用チームが社内の「エリート」と見なされるようになる</li><li>非活用チームのメンバーが「自分たちは取り残された」と感じ、士気が下がる</li><li>優秀な人材がAI活用チームへの異動を希望し、格差がさらに拡大する</li><li>組織全体のAI成熟度は、最も遅いチームの水準に引きずられる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 組織の分断</div>
+<ul><li>「AI組」と「非AI組」という暗黙のカーストが定着する</li><li>AI活用チームへの過度な依存がリスクになる（キーパーソン依存）</li><li>非活用チームのプロダクトやサービスの品質が相対的に低下する</li><li>「全員でAIを使う」という当初の目標を誰も覚えていない</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>あなたの組織で「AIが得意な人に任せよう」という言葉が頻繁に聞こえるなら、それは Stage 2〜3 のサインかもしれません。一部の「AIヒーロー」に依存する構造は、短期的には効率的に見えますが、長期的には組織全体のAI活用能力の天井を作ってしまいます。</p>
+</div>
+
+<h2 id="罠5-バラバラの目標-「速く作る」と「正しいものを作る」の綱引き">罠5: バラバラの目標——「速く作る」と「正しいものを作る」の綱引き</h2>
+
+<div class="diagram">
+  <div class="diagram-title">開発効率とプロダクト価値の「バラバラの目標」</div>
+  <svg viewBox="0 0 760 480" xmlns="http://www.w3.org/2000/svg" style="max-width:760px; --dur: 12s;">
+<defs>
+  <marker id="cg-a-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#2563eb"/>
+  </marker>
+  <marker id="cg-b-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+    <path d="M0 0L10 5L0 10z" fill="#dc2626"/>
+  </marker>
+</defs>
+
+<style>
+  /* タイトル */
+  .cg-title { animation: cg-title var(--dur) infinite; }
+  @keyframes cg-title {
+    0%, 95% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 共有状態ボックス（始めから表示、55-75%で強調） */
+  .cg-box-shared { transform-origin: 380px 208px; animation: cg-box-s var(--dur) infinite; }
+  .cg-shared-rect { animation: cg-shared-rect-anim var(--dur) infinite; }
+  @keyframes cg-box-s {
+    0%, 54% { transform: scale(1); opacity: 1; }
+    55%, 75% { transform: scale(1.05); opacity: 1; }
+    80%, 95% { transform: scale(1); opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes cg-shared-rect-anim {
+    0%, 54% { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; }
+    55%, 75% { fill: #ede9fe; stroke: #5b21b6; stroke-width: 4; }
+    80%, 95% { fill: #f5f3ff; stroke: #7c3aed; stroke-width: 2; }
+    100% { fill: #f5f3ff; }
+  }
+
+  /* A目標ボックス出現 5% */
+  .cg-show-5 { animation: cg-s-5 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-5 {
+    0%, 4% { opacity: 0; transform: translateY(10px); }
+    5%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-1: A目標→A行動 5-10% */
+  .cg-path-1 { stroke-dasharray: 600; animation: cg-d-1 var(--dur) infinite; }
+  @keyframes cg-d-1 {
+    0%, 4% { stroke-dashoffset: 600; opacity: 0; }
+    5% { opacity: 1; stroke-dashoffset: 600; }
+    10%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* A行動ボックス出現 10% */
+  .cg-show-10 { animation: cg-s-10 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-10 {
+    0%, 9% { opacity: 0; transform: translateY(10px); }
+    10%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-3: A行動→共有状態 上弧 12-17% */
+  .cg-path-3 { stroke-dasharray: 600; animation: cg-d-3 var(--dur) infinite; }
+  @keyframes cg-d-3 {
+    0%, 11% { stroke-dashoffset: 600; opacity: 0; }
+    12% { opacity: 1; stroke-dashoffset: 600; }
+    17%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-4: 共有状態→A行動 下弧 17-22% */
+  .cg-path-4 { stroke-dasharray: 600; animation: cg-d-4 var(--dur) infinite; }
+  @keyframes cg-d-4 {
+    0%, 16% { stroke-dashoffset: 600; opacity: 0; }
+    17% { opacity: 1; stroke-dashoffset: 600; }
+    22%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 左B-loopラベル出現 22% */
+  .cg-show-22 { transform-origin: 255px 208px; animation: cg-s-22 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-22 {
+    0%, 21% { opacity: 0; transform: scale(0.5); }
+    22%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* B目標ボックス出現 28% */
+  .cg-show-28 { animation: cg-s-28 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-28 {
+    0%, 27% { opacity: 0; transform: translateY(10px); }
+    28%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-2: B目標→B行動 28-33% */
+  .cg-path-2 { stroke-dasharray: 600; animation: cg-d-2 var(--dur) infinite; }
+  @keyframes cg-d-2 {
+    0%, 27% { stroke-dashoffset: 600; opacity: 0; }
+    28% { opacity: 1; stroke-dashoffset: 600; }
+    33%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* B行動ボックス出現 33% */
+  .cg-show-33 { animation: cg-s-33 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-33 {
+    0%, 32% { opacity: 0; transform: translateY(10px); }
+    33%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+
+  /* path-5: B行動→共有状態 上弧 35-40% */
+  .cg-path-5 { stroke-dasharray: 600; animation: cg-d-5 var(--dur) infinite; }
+  @keyframes cg-d-5 {
+    0%, 34% { stroke-dashoffset: 600; opacity: 0; }
+    35% { opacity: 1; stroke-dashoffset: 600; }
+    40%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* path-6: 共有状態→B行動 下弧 40-45% */
+  .cg-path-6 { stroke-dasharray: 600; animation: cg-d-6 var(--dur) infinite; }
+  @keyframes cg-d-6 {
+    0%, 39% { stroke-dashoffset: 600; opacity: 0; }
+    40% { opacity: 1; stroke-dashoffset: 600; }
+    45%, 95% { stroke-dashoffset: 0; opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* 右B-loopラベル出現 45% */
+  .cg-show-45 { transform-origin: 505px 208px; animation: cg-s-45 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-45 {
+    0%, 44% { opacity: 0; transform: scale(0.5); }
+    45%, 95% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+  }
+
+  /* オプションテキストの出現 80% */
+  .cg-show-80 { animation: cg-s-80 var(--dur) infinite; opacity: 0; }
+  @keyframes cg-s-80 {
+    0%, 79% { opacity: 0; transform: translateY(5px); }
+    80%, 95% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; }
+  }
+</style>
+
+<!-- タイトル -->
+<text class="cg-title" x="380" y="30" text-anchor="middle" font-size="18" font-weight="700" fill="#334155" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">開発効率とプロダクト価値の「バラバラの目標」</text>
+
+<!-- 共有状態ボックス（始めから表示） -->
+<g class="cg-box-shared">
+  <rect class="cg-shared-rect" x="290" y="180" width="180" height="56" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="380" y="202" text-anchor="middle" font-size="11" font-weight="700" fill="#7c3aed" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">デリバリーの質と量</text>
+  <text x="380" y="220" text-anchor="middle" font-size="11" fill="#4c1d95" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">デリバリーの質と量のバランス（混乱・手戻り）</text>
+</g>
+
+<!-- A目標ボックス出現 5% -->
+<g class="cg-show-5">
+  <rect x="40" y="60" width="180" height="48" rx="10" fill="#f8fafc" stroke="#2563eb" stroke-width="2" stroke-dasharray="4 2"/>
+  <text x="130" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">速く作る</text>
+  <text x="130" y="98" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">開発チームの目標（AIで速く・多く作る）</text>
+</g>
+
+<!-- path-1: A目標→A行動 (縦破線) + 極性 -->
+<g class="cg-path-1">
+  <path d="M 130 108 L 130 170" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#cg-a-arr)"/>
+  <text x="140" y="145" text-anchor="start" font-size="14" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- A行動ボックス出現 10% -->
+<g class="cg-show-10">
+  <rect x="40" y="180" width="180" height="56" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="130" y="202" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AI活用で生産量を最大化</text>
+  <text x="130" y="220" text-anchor="middle" font-size="11" fill="#1e40af" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">AIを活用してコード生産量・機能数を最大化する</text>
+</g>
+
+<!-- path-3: A行動→共有状態 上弧 + 極性 -->
+<g class="cg-path-3">
+  <path d="M 160 180 C 200 130, 310 130, 350 180" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#cg-a-arr)"/>
+  <text x="255" y="145" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- path-4: 共有状態→A行動 下弧 + 極性 -->
+<g class="cg-path-4">
+  <path d="M 350 236 C 310 286, 200 286, 160 236" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#cg-a-arr)"/>
+  <text x="255" y="275" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- 左B-loopラベル出現 22% -->
+<g class="cg-show-22">
+  <circle cx="255" cy="208" r="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+  <text x="255" y="213" text-anchor="middle" font-size="12" font-weight="700" fill="#2563eb" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<!-- B目標ボックス出現 28% -->
+<g class="cg-show-28">
+  <rect x="540" y="60" width="180" height="48" rx="10" fill="#f8fafc" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 2"/>
+  <text x="630" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">正しいものを作る</text>
+  <text x="630" y="98" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">プロダクト/事業側の目標（正しいものを届ける）</text>
+</g>
+
+<!-- path-2: B目標→B行動 (縦破線) + 極性 -->
+<g class="cg-path-2">
+  <path d="M 630 108 L 630 170" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#cg-b-arr)"/>
+  <text x="640" y="145" text-anchor="start" font-size="14" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- B行動ボックス出現 33% -->
+<g class="cg-show-33">
+  <rect x="540" y="180" width="180" height="56" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="630" y="202" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">顧客検証で精度を最大化</text>
+  <text x="630" y="220" text-anchor="middle" font-size="11" fill="#991b1b" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">顧客検証・仮説検証に時間をかけ、作るべきものを精査する</text>
+</g>
+
+<!-- path-5: B行動→共有状態 上弧 + 極性 -->
+<g class="cg-path-5">
+  <path d="M 600 180 C 560 130, 450 130, 410 180" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#cg-b-arr)"/>
+  <text x="505" y="145" text-anchor="middle" font-size="18" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">−</text>
+</g>
+
+<!-- path-6: 共有状態→B行動 下弧 + 極性 -->
+<g class="cg-path-6">
+  <path d="M 410 236 C 450 286, 560 286, 600 236" fill="none" stroke="#dc2626" stroke-width="2" marker-end="url(#cg-b-arr)"/>
+  <text x="505" y="275" text-anchor="middle" font-size="16" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">+</text>
+</g>
+
+<!-- 右B-loopラベル出現 45% -->
+<g class="cg-show-45">
+  <circle cx="505" cy="208" r="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="505" y="213" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">B</text>
+</g>
+
+<g class="cg-show-80">
+  <rect x="130" y="340" width="500" height="36" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="380" y="363" text-anchor="middle" font-size="10.5" font-weight="600" fill="#92400e" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">「速く届ける」と「正しいものを届ける」は独立した変数である。AIが「速さ」を劇的に向上させたとき、「正しさ」の検証が追いつかなければ、間違ったものを高速に量産する結果になる。</text>
+</g>
+<g class="cg-show-80">
+  <rect x="130" y="390" width="500" height="36" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="380" y="413" text-anchor="middle" font-size="10.5" font-weight="600" fill="#047857" font-family="'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif">「速く作れるからこそ、何を作るかの検証に時間を使える」という発想の転換を行い、AIで浮いた時間を顧客検証・仮説検証に再投資する。</text>
+</g>
+</svg>
+</div>
+
+<h3 id="ループを読み解く-4">ループを読み解く</h3>
+
+<h4 id="b-ループ左（開発チームの論理-速さの追求）">B ループ左（開発チームの論理——速さの追求）</h4>
+
+<p>開発チームが「AIで生産性を上げる」というKPIを追う → AIを活用してコード生産量・機能リリース数を最大化する → 大量の機能が短期間で実装される → <strong>しかし、顧客にとって価値のある機能かどうかは未検証</strong> → 使われない機能が増え、プロダクトが複雑化する → デリバリーの質が低下する</p>
+
+<p>杉野さんの6層モデルの最上位、<strong>L6（事業価値層）</strong>が突きつける問いはこれです——「速く届ける ≠ 正しいものを届ける」。AIによってコーディング速度が2倍になったとき、2倍の機能を作るのが正解でしょうか。それとも、同じ量の機能を作りながら、浮いた時間で「そもそもこれは作るべきか」を検証するのが正解でしょうか。</p>
+
+<p>開発チームにとって、AIで加速した生産性を「目に見える成果」にする最も簡単な方法は、機能の数を増やすことです。PRの数、リリースした機能数、閉じたチケットの数。しかしこれらはすべて<strong>「活動量」</strong>であり、<strong>「価値」</strong>ではありません。</p>
+
+<h4 id="b-ループ右（プロダクト-事業側の論理-正しさの追求）">B ループ右（プロダクト/事業側の論理——正しさの追求）</h4>
+
+<p>プロダクト/事業側が「正しいものを届ける」というKPIを追う → 顧客検証・仮説検証・ユーザーインタビューに時間をかける → 作るべきものが精査される → <strong>しかし、検証に時間がかかりリリースが遅れる</strong> → 開発チームが「もっと速く決めてほしい」と不満を持つ → デリバリーの量が低下する</p>
+
+<p>プロダクト側もまた合理的に行動しています。間違ったものを作るよりも、正しいものを慎重に見極める方がいい。しかし開発チームがAIで加速しているのに、仕様の決定速度が変わらなければ、「仕様待ち」が新たなボトルネックになります。<strong>二つの「正しさ」が、デリバリーの質と量というシーソーの上で綱引きしている</strong>——これがバラバラの目標の構造です。</p>
+
+<p>杉野さんが指摘した「効率と有効性は独立した変数」という洞察は、まさにこの構造を言い当てています。効率（速く作る能力）をいくら上げても、有効性（正しいものを作る能力）が同時に上がるわけではない。AIは効率を劇的に改善したが、有効性には手をつけていない。その結果、<strong>効率と有効性のギャップがかつてないほど開いている</strong>のです。</p>
+
+<h3 id="段階的に進行する症状-4">段階的に進行する症状</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">Stage 1: それぞれの正義</div>
+<ul><li>開発チームは「AIでこんなに速く作れるようになった」と誇る</li><li>プロダクト側は「何を作るかが大事」と主張する</li><li>両者のKPIは別々に設定され、接点は少ない</li><li>「速さ」と「正しさ」の矛盾は表面化していない</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 2: 摩擦の発生</div>
+<ul><li>開発チームが「仕様が来ない。手が空いている」と訴える</li><li>プロダクト側が「こんなに速く作られても検証が追いつかない」と困惑する</li><li>AIで量産された機能の利用率データを見ると、使われていない機能が増えている</li><li>「速く作ったのに価値が出ていない」という矛盾が数字に表れ始める</li></ul>
+</div>
+<div class="card">
+<div class="card-header pm">Stage 3: 対立の固定化</div>
+<ul><li>開発チームは「プロダクト側が遅い」、プロダクト側は「開発が勝手に作る」と互いを批判</li><li>手戻り（作ったけど使われない機能のリワーク）が増え、実質的な生産性が低下する</li><li>経営層が「AI導入したのに事業成果が出ない」と疑問を持つ</li><li>「もっとAIを使って速く作れ」vs「もっと慎重に検証しろ」の対立が深まる</li></ul>
+</div>
+<div class="card">
+<div class="card-header reviewer">Stage 4: 高速な無駄の量産</div>
+<ul><li>AIで加速された開発力が「間違ったものの高速量産」に使われている</li><li>プロダクトの複雑性が爆発し、保守コストが膨れ上がる</li><li>顧客が「機能は増えたけど、欲しいものがない」と離反し始める</li><li>「たくさん作ったのに、なぜ事業が成長しないのか」という問いに誰も答えられない</li></ul>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>AIが「速さ」を解決した今、最も価値のある時間の使い方は「もっと速く作ること」ではなく、「何を作るべきかを正確に見極めること」かもしれません。速く作れるからこそ、立ち止まって考える余裕が生まれた——そう捉え直すことが、この罠から抜け出す第一歩です。</p>
+</div>
+
+<h2 id="なぜこうなるのか-5つの罠が絡み合う構造">なぜこうなるのか——5つの罠が絡み合う構造</h2>
+
+<p>ここまで5つの構造を別々に見てきましたが、実は、これらは互いに<strong>強め合う関係</strong>にあります。</p>
+
+<strong>罠1→罠2</strong>: 「成長の限界」で個人の速さが天井にぶつかると、組織は<strong>「もっとAIツールを」</strong>と「問題のすり替わり」のループに入ります。
+
+<strong>罠2→罠3</strong>: すり替わりの結果、組織基盤への投資が先送りされ、<strong>「成長と投資不足」</strong>が進行します。投資不足で成果が出ないと基準が下がり、基準が下がるとさらに投資の必要性が見えなくなる。
+
+<strong>罠1→罠4</strong>: 個人の速さで成果が出たチームにリソースが集中し、<strong>「成功の限界」</strong>が発動します。AI格差が固定化されると、組織全体のAI成熟度はいつまでも上がらない。
+
+<strong>罠1→罠5</strong>: AIで「速さ」だけが加速すると、「正しさ」の検証が追いつかず、<strong>「バラバラの目標」</strong>が顕在化します。速く作れるようになったのに事業成果が出ない——L6（事業価値層）の課題はここに根ざしています。
+
+<p>5つの罠が連鎖するとき、組織は<strong>「AIは使えない」</strong>という誤った結論に向かうか、あるいは<strong>「AIは一部のエリートの個人ツール」</strong>という矮小化された理解に留まり続けます。</p>
+
+<p>でも、これは誰のせいでもありません。<strong>構造がそうさせている</strong>のです。個人が速くなれば組織も速くなるはずだ、という直感はごく自然なもの。AIツールに期待するのも当然のこと。問題は直感の誤りではなく、組織というシステムが持つ<strong>非線形性</strong>——部分の改善が全体の改善に直結しないという性質——を見落としていることにあります。</p>
+
+<h2 id="レバレッジポイント-どこを変えれば流れが変わるか">レバレッジポイント——どこを変えれば流れが変わるか</h2>
+
+<p>ところで、「レバレッジポイント」という考え方をご存じですか。</p>
+<p>システムの中には、小さな力で大きな変化を生み出せるポイントがあります。</p>
+<p>力ずくでシステムを変えようとするのではなく、構造の急所に働きかけるのです。</p>
+
+<p>あなたの組織では、次の5つのポイントが鍵になります。</p>
+
+<h3 id="レバレッジ-1-計測基準を「個人の速さ」から「組織のフロー」に変える">レバレッジ 1: 計測基準を「個人の速さ」から「組織のフロー」に変える</h3>
+
+<ul>
+<li><strong>対象ループ</strong>: 成長と投資不足の B ループ2（基準のなし崩し）</li>
+<li><strong>なぜここが急所なのか</strong>: 計測基準が変われば、何に投資すべきかの判断が変わります。「AIツール利用率」ではなく「デリバリーのリードタイム」「変更失敗率」「デプロイ頻度」（DORA Metrics）を基準にすれば、L3（接続・調整層）のボトルネックが可視化され、投資の優先順位が構造的に変わります</li>
+<li><strong>期待される変化</strong>: 基準が組織レベルに設定されることで、「個人が速くなった」だけでは満足せず、「組織として速くなったか」を問う文化が生まれます</li>
+
+</ul>
+<h3 id="レバレッジ-2-aiの投資先を「実装-個人」から「接続・調整層」へシフトする">レバレッジ 2: AIの投資先を「実装×個人」から「接続・調整層」へシフトする</h3>
+
+<ul>
+<li><strong>対象ループ</strong>: 成長の限界の B ループ（接続・調整層の天井）</li>
+<li><strong>なぜここが急所なのか</strong>: 杉野さんの2軸モデル（開発ライフサイクル×スコープ）が示す通り、現在のAI投入は「実装×個人」に集中しています。しかし最大のボトルネックはL3（レビュー、仕様確認、意思決定）です。AIの力を「コードを書く」から「チーム間の接続を滑らかにする」方向に振り向ければ、制約要因そのものが緩和されます</li>
+<li><strong>期待される変化</strong>: 「待ち時間」が短縮され、個人の速さがそのまま組織の速さに転換される割合が高まります</li>
+
+</ul>
+<h3 id="レバレッジ-3-aiとセットで「組織の基礎体力」に投資する">レバレッジ 3: AIとセットで「組織の基礎体力」に投資する</h3>
+
+<ul>
+<li><strong>対象ループ</strong>: 問題のすり替わりの R ループ（既存課題の増幅）</li>
+<li><strong>なぜここが急所なのか</strong>: DORA 2025が示した「AIはミラーとマルチプライヤー」は、AIが基盤の強い組織でのみ正の効果を生むことを意味します。Booking.comの事例（DORA計測×リーンプロセス×成熟CI/CD×AI）は、<strong>複数の投入面を掛け合わせたときに初めて相乗効果が生まれる</strong>ことを実証しています</li>
+<li><strong>期待される変化</strong>: AIが「問題を増幅する鏡」ではなく「強みを増幅する鏡」として機能し始めます</li>
+
+</ul>
+<h3 id="レバレッジ-4-ai活用の知見を「属人化」から「組織の仕組み」に変える">レバレッジ 4: AI活用の知見を「属人化」から「組織の仕組み」に変える</h3>
+
+<ul>
+<li><strong>対象ループ</strong>: 成功の限界の R ループ左右（格差の拡大）</li>
+<li><strong>なぜここが急所なのか</strong>: AI活用の成果が一部のチーム・個人に閉じている限り、組織全体のAI成熟度は上がりません。成功チームの知見を他チームに移転する仕組み——ペアプログラミング、社内勉強会、プロンプトライブラリの共有、AI活用ガイドライン——を作ることで、リソース配分の偏りという構造そのものを変えられます</li>
+<li><strong>期待される変化</strong>: 「AIが得意な一部の人」から「組織全体がAIを活用できる」へ。底上げが進むことで、L3（接続・調整層）の改善にもAIが使われ始めます</li>
+
+</ul>
+<h3 id="レバレッジ-5-aiで浮いた時間を「もっと作る」ではなく「何を作るかの検証」に使う">レバレッジ 5: AIで浮いた時間を「もっと作る」ではなく「何を作るかの検証」に使う</h3>
+
+<ul>
+<li><strong>対象ループ</strong>: バラバラの目標の B ループ左右（速さと正しさの綱引き）</li>
+<li><strong>なぜここが急所なのか</strong>: AIが開発の「速さ」を解決した今、最大のボトルネックは「正しいものを見極める力」に移っています。速さで浮いた時間をプロトタイピング・顧客検証・A/Bテストに再投資すれば、「速く作る」と「正しいものを作る」が対立ではなく相互補完の関係に変わります。杉野さんの6層モデルでいうL6（事業価値層）に直接効くレバレッジです</li>
+<li><strong>期待される変化</strong>: 「速く作ったのに使われない」が減り、作ったものの価値実現率が上がる。開発チームとプロダクト側の目標が揃い始めます</li>
+
+</ul>
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>つまり、こういうことです。AIツールの導入は「入口」であって「ゴール」ではありません。入口の先にある「計測基準の設計」「接続・調整層への投資」「組織基盤との掛け合わせ」「知見の組織的な共有」「浮いた時間の戦略的再投資」——この5つに同時に取り組んだとき、初めてAIは組織を速くします。</p>
+</div>
+
+<h2 id="明日からできること-アクション案">明日からできること——アクション案</h2>
+
+<p>大きな改革は必要ありません。まずは小さな一歩から始めましょう。</p>
+
+<h3 id="アクション-1-バリューストリームの「待ち時間」を可視化する">アクション 1: バリューストリームの「待ち時間」を可視化する</h3>
+
+<ul>
+<li><strong>誰が</strong>: 開発チームのリード、またはスクラムマスター</li>
+<li><strong>何を</strong>: 1つのフィーチャーが「着手」から「本番リリース」に至るまでの時間を計測し、「作業時間」と「待ち時間」に分解する</li>
+<li><strong>いつ</strong>: 今週中に1つのフィーチャーで試す</li>
+<li><strong>どうやって</strong>: 直近のリリースを1つ選び、各工程の開始・終了時刻を追跡する。Jira/Linear等のタイムスタンプから「レビュー待ち」「仕様確認待ち」「デプロイ待ち」を抽出する。作業時間と待ち時間の比率を円グラフにして、チームに共有する</li>
+<li><strong>気をつけること</strong>: これは誰かを責めるための計測ではありません。「構造を見るための計測」であることを最初に明言してください。数字が予想以上に悪くても、それは構造が見えたということ。良い兆候です</li>
+
+</ul>
+<h3 id="アクション-2-dora-metricsの4指標を週次で追跡し始める">アクション 2: DORA Metricsの4指標を週次で追跡し始める</h3>
+
+<ul>
+<li><strong>誰が</strong>: エンジニアリングマネージャーまたは開発基盤チーム</li>
+<li><strong>何を</strong>: デプロイ頻度・リードタイム・変更失敗率・復旧時間の4指標を定義し、ダッシュボードを作成する</li>
+<li><strong>いつ</strong>: 次の2週間で初期ダッシュボードを作り、4週間後に最初のトレンドレビューを行う</li>
+<li><strong>どうやって</strong>: まずは手動集計でもよい。CI/CDのログからデプロイ頻度とリードタイムを、障害チケットから変更失敗率と復旧時間を追跡する。完璧を求めず、「まず計測を始める」ことを優先する</li>
+<li><strong>気をつけること</strong>: DORA Metricsを「評価」に使うと、数字を操作する動機が生まれます。あくまで「改善のための鏡」として位置づけてください。また、AI導入前のベースラインがなければ、今から取り始めれば今がベースラインになります</li>
+
+</ul>
+<h3 id="アクション-3-ai投資とセットで「接続・調整」の改善テーマを1つ選ぶ">アクション 3: AI投資とセットで「接続・調整」の改善テーマを1つ選ぶ</h3>
+
+<ul>
+<li><strong>誰が</strong>: 経営層・VPoE・開発リード</li>
+<li><strong>何を</strong>: 次のAIツール投資の予算のうち、20%を「接続・調整層の改善」に充てる。例えば、AIコードレビュー支援、AI要件定義支援、意思決定の非同期化ツールなど</li>
+<li><strong>いつ</strong>: 次の四半期計画で組み込む</li>
+<li><strong>どうやって</strong>: 杉野さんの2軸モデル（開発ライフサイクル×スコープ）を使い、現在のAI投資が「実装×個人」に偏っていないか棚卸しする。バリューストリーム分析で特定した最大の「待ち時間」に対応するAI活用テーマを1つ選ぶ</li>
+<li><strong>気をつけること</strong>: 「接続・調整」の改善は技術だけでは解決しません。会議体の見直し、意思決定プロセスの短縮、チーム構造の再設計など、組織設計の要素が含まれます。技術チームだけでなく、マネジメント層の巻き込みが不可欠です</li>
+
+</ul>
+<h3 id="アクション-4-ai活用の「成功事例」を仕組みとして組織に展開する">アクション 4: AI活用の「成功事例」を仕組みとして組織に展開する</h3>
+
+<ul>
+<li><strong>誰が</strong>: AI活用が進んでいるチームのリード + エンジニアリングマネージャー</li>
+<li><strong>何を</strong>: AI活用の知見を属人的な「あの人がすごい」から組織の共有資産に変える。具体的には、プロンプトライブラリの整備、AI活用のペアプログラミングセッション、週次の「AI Tips共有会」の開催</li>
+<li><strong>いつ</strong>: 来週から、まずは月2回の共有会を試す</li>
+<li><strong>どうやって</strong>: AI活用チームのメンバーが、非活用チームと1対1でペアプロする「AI Buddy制度」を始める。30分でいい。「自分がAIをどう使っているか」を見せるだけで、学びのハードルは劇的に下がる。成功パターンはプロンプトテンプレートとしてNotionやConfluenceに蓄積する</li>
+<li><strong>気をつけること</strong>: 「教える側」と「教わる側」という上下関係にならないよう注意。AI活用チームも他チームから学ぶことがある（ドメイン知識、顧客理解など）。双方向の学び合いとして設計する</li>
+
+</ul>
+<h3 id="アクション-5-aiで浮いた時間の20-を「何を作るか」の検証に再投資する">アクション 5: AIで浮いた時間の20%を「何を作るか」の検証に再投資する</h3>
+
+<ul>
+<li><strong>誰が</strong>: プロダクトマネージャー + 開発チームリード</li>
+<li><strong>何を</strong>: AIによって短縮された開発時間の一部を、プロトタイピング・顧客インタビュー・A/Bテストに充てる</li>
+<li><strong>いつ</strong>: 次のスプリントから、各スプリントに「検証タイム」を1日確保する</li>
+<li><strong>どうやって</strong>: スプリントプランニングで「作る機能」と「検証する仮説」をセットで計画する。AIで高速にプロトタイプを作り、顧客に見せてフィードバックを得る。「作る前に確かめる」サイクルを回す。作らなくてよいものが1つ見つかれば、それだけで数スプリント分のコストが浮く</li>
+<li><strong>気をつけること</strong>: 「検証に時間を使う＝遅くなる」という誤解が生まれやすい。実際には、間違ったものを作る手戻りの方がはるかにコストが高い。「速く作れるからこそ、何を作るかに時間を使える」というフレーミングが大切です</li>
+
+</ul>
+<h2 id="おわりに-構造に気づいたあなたへ">おわりに——構造に気づいたあなたへ</h2>
+
+<p>ここまで読んでくださって、ありがとうございます。</p>
+
+<p>今回の分析で見えてきたのは、「AIが使えない」のでも、「あなたの組織が悪い」のでもないということです。<strong>個人の速さが組織の速さに変換されない構造がある</strong>——それだけのことです。</p>
+
+<p>5つの構造的な罠。成長の限界、問題のすり替わり、成長と投資不足、成功の限界、バラバラの目標。どれも、個人が合理的に行動した結果として生まれる罠です。誰も悪循環を望んでいなかった。でも、構造が見えなければ、同じパターンを繰り返してしまう。</p>
+
+杉野さんが示した「診断→構造化→介入点→レバレッジ設計」というプロセスは、まさにシステム思考そのものです。<strong>計測して、構造を見て、急所に働きかける。</strong>
+
+<p>全部を一度に変えようとしなくて大丈夫です。</p>
+<p>まずはバリューストリームの「待ち時間」を1つだけ可視化してみてください。</p>
+<p>そこに見えた数字が、次の一歩を教えてくれます。</p>
+
+<p>小さな変化が、やがてシステム全体の流れを変えていきます。</p>
+
+<p>あなたの組織なら、きっとできます。</p>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>AIは組織の基礎体力を映す鏡であり、増幅器です。鏡に映った姿が気に入らないとき、鏡を取り替えても何も変わりません。変えるべきは、鏡の前に立っている自分たち——組織の構造そのものです。</p>
+</div>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li>杉野和馬（su8 / denchu）「<a href="https://speakerdeck.com/sugino/nazeaihazu-zhi-wosu-kusinainoka-ling-he-nofu-fen-ke">なぜAIは組織を速くしないのか——令和の腑分け</a>」（2026年2月26日、開発生産性のその先へ、AI生産性について語りたい）</li>
+</ul>
+</div>
+</article>
+
+<footer>
+  <div class="container">
+    <p>Generated by md2html / 2026-02-27</p>
+  </div>
+</footer>
+
+</body>
+</html>
