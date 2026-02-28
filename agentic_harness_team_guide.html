@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://unpkg.com; frame-ancestors 'none'">
+<title>Agenticハーネス チーム展開ガイド</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+
+  :root {
+    --bg: #fafaf9;
+    --text: #1c1917;
+    --text-secondary: #57534e;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --border: #e7e5e4;
+    --card-bg: #ffffff;
+    --pm-color: #2563eb;
+    --reviewer-color: #059669;
+    --lead-color: #7c3aed;
+    --insight-bg: #fffbeb;
+    --insight-border: #f59e0b;
+    --code-bg: #f5f5f4;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 16px;
+  }
+  .container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #fff;
+    padding: 64px 0 56px;
+  }
+  header .container { text-align: center; }
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  header .subtitle {
+    font-size: 15px;
+    color: #94a3b8;
+    line-height: 1.7;
+  }
+  header .meta {
+    margin-top: 24px;
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  /* Article */
+  article { padding: 48px 0 80px; }
+  h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 48px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--text);
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 36px 0 14px;
+    color: var(--text);
+  }
+  h4 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 28px 0 12px;
+    color: var(--text);
+  }
+  p { margin-bottom: 16px; }
+  ul, ol { margin: 0 0 16px 24px; }
+  li { margin-bottom: 6px; }
+
+  /* Diagram container */
+  .diagram {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .diagram-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  /* SVG diagram */
+  .diagram svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Table */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 16px 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .code-block-header {
+    background: #e7e5e4;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .code-block-lang {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .code-block-content {
+    padding: 20px;
+    font-family: "SF Mono", "Monaco", "Inconsolata", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .code-block-content pre {
+    margin: 0;
+    white-space: pre;
+  }
+  .code-block-content code {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+  }
+
+  /* Quote */
+  blockquote {
+    border-left: 3px solid #cbd5e1;
+    padding: 8px 20px;
+    margin: 16px 0;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Links */
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-bottom-color 0.2s;
+  }
+  a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  /* Material Symbols Outlined */
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.2em;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Separator */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin: 32px 0;
+    box-shadow: var(--shadow);
+  }
+  .toc-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: toc;
+  }
+  .toc > ol > li {
+    counter-increment: toc;
+    margin-bottom: 4px;
+  }
+  .toc > ol > li::before {
+    content: counter(toc) ".";
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+  .toc > ol > li > ol {
+    margin: 2px 0 6px 24px;
+    counter-reset: toc-sub;
+  }
+  .toc > ol > li > ol > li {
+    counter-increment: toc-sub;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  .toc > ol > li > ol > li::before {
+    content: counter(toc-sub) ".";
+    color: var(--text-secondary);
+    margin-right: 4px;
+  }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  /* Mermaid diagram */
+  .mermaid-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  .mermaid-wrapper .diagram-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* SVG embed */
+  .svg-embed {
+    margin: 32px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .svg-embed svg {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Footer */
+  footer {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 32px 0;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .card-header.pm { color: var(--pm-color); }
+  .card-header.reviewer { color: var(--reviewer-color); }
+  .card p { font-size: 14px; margin-bottom: 8px; }
+  .card p:last-child { margin-bottom: 0; }
+  .card ul { font-size: 14px; margin: 0 0 8px 20px; padding: 0; }
+  .card li { margin-bottom: 4px; }
+  .card ul:last-child { margin-bottom: 0; }
+  .insight {
+    background: var(--insight-bg);
+    border-left: 4px solid var(--insight-border);
+    border-radius: 0 8px 8px 0;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .insight-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--insight-border);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .insight p:last-child { margin-bottom: 0; }
+  .proscons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 640px) { .proscons-grid { grid-template-columns: 1fr; } }
+  .proscons-card {
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .proscons-card.pros {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+  .proscons-card.cons {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .proscons-header {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+  .proscons-header.pros { color: #16a34a; }
+  .proscons-header.cons { color: #dc2626; }
+  .proscons-card ul { margin: 0 0 0 20px; }
+  .proscons-card li { font-size: 14px; margin-bottom: 6px; }
+  .proscons-card li:last-child { margin-bottom: 0; }
+  .proscons-card p { font-size: 14px; margin-bottom: 8px; }
+  .proscons-card p:last-child { margin-bottom: 0; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.registerIconPacks([
+  {
+    name: 'ms',
+    loader: () => fetch('https://unpkg.com/@iconify-json/material-symbols@1/icons.json').then(r => r.json())
+  }
+]);
+mermaid.initialize({startOnLoad:true, theme:'neutral'});
+window.addEventListener('load',()=>setTimeout(()=>{
+  document.querySelectorAll('.icon-shape').forEach(n=>{
+    const p=n.querySelector('p');
+    if(!p)return;
+    const c=getComputedStyle(p).color;
+    if(c==='rgb(0, 0, 0)')return;
+    n.querySelectorAll('svg path[fill="currentColor"]').forEach(path=>{
+      path.setAttribute('fill',c);
+    });
+  });
+},800));
+</script>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Agenticハーネス チーム展開ガイド</h1>
+    <p class="subtitle">Claude Code × スキル活用｜社内研修・実務標準化版</p>
+    <p class="meta">2026-02-28 / Co-Generative Agility</p>
+  </div>
+</header>
+
+<article>
+<div class="container">
+<nav class="toc">
+<p class="toc-title">目次</p>
+<ol>
+<li><a href="#【導入者向け】第0章　展開前の準備">【導入者向け】第0章　展開前の準備</a>
+<li><a href="#【全員必須】第1章　共通の概念を揃える">【全員必須】第1章　共通の概念を揃える</a>
+<ol>
+<li><a href="#1-1-「一問一答」と「エージェント」の違い">1-1. 「一問一答」と「エージェント」の違い</a></li>
+<li><a href="#1-2-agenticループとは何か">1-2. Agenticループとは何か</a></li>
+<li><a href="#1-3-ハーネスの定義：モデルを動かす「車体」の役割">1-3. ハーネスの定義：モデルを動かす「車体」の役割</a></li>
+<li><a href="#1-4-claude-codeがハーネスとしてどう機能するか">1-4. Claude Codeがハーネスとしてどう機能するか</a></li>
+</ol></li>
+<li><a href="#【全員必須】第2章　ハーネスの構成要素（共通言語）">【全員必須】第2章　ハーネスの構成要素（共通言語）</a>
+<ol>
+<li><a href="#2-1-ツール：モデルが外部に指示を出す仕組み">2-1. ツール：モデルが外部に指示を出す仕組み</a></li>
+<li><a href="#2-2-ループ制御：いつ止まるかを決めるロジック">2-2. ループ制御：いつ止まるかを決めるロジック</a></li>
+<li><a href="#2-3-コンテキスト管理：会話状態と記憶の扱い方">2-3. コンテキスト管理：会話状態と記憶の扱い方</a></li>
+<li><a href="#2-4-human-in-the-loop：人間が介入すべき場所">2-4. Human-in-the-loop：人間が介入すべき場所</a></li>
+<li><a href="#2-5-エラーハンドリングの考え方">2-5. エラーハンドリングの考え方</a></li>
+</ol></li>
+<li><a href="#【初心者向け】第3章　まず触ってみる（ハンズオン）">【初心者向け】第3章　まず触ってみる（ハンズオン）</a>
+<ol>
+<li><a href="#3-1-claude-codeの基本操作（インストール〜最初の実行）">3-1. Claude Codeの基本操作（インストール〜最初の実行）</a></li>
+<li><a href="#3-2-ループが回っている様子を観察する">3-2. ループが回っている様子を観察する</a></li>
+<li><a href="#3-3-スキルを使ってみる">3-3. スキルを使ってみる</a></li>
+<li><a href="#3-4-「何が自動でされたか」を言語化する習慣">3-4. 「何が自動でされたか」を言語化する習慣</a></li>
+</ol></li>
+<li><a href="#【初心者向け】第4章　スキルを理解する">【初心者向け】第4章　スキルを理解する</a>
+<ol>
+<li><a href="#4-1-スキルとは何か（ハーネスへの「役割追加」として理解する）">4-1. スキルとは何か（ハーネスへの「役割追加」として理解する）</a></li>
+<li><a href="#4-2-skill-mdの読み方・構造の把握">4-2. SKILL.mdの読み方・構造の把握</a></li>
+<li><a href="#4-3-スキルがハーネスのどの部分を担っているかを意識する">4-3. スキルがハーネスのどの部分を担っているかを意識する</a></li>
+<li><a href="#4-4-使えるスキル一覧と用途の把握">4-4. 使えるスキル一覧と用途の把握</a></li>
+</ol></li>
+<li><a href="#【中級者向け】第5章　チームで標準化する">【中級者向け】第5章　チームで標準化する</a>
+<ol>
+<li><a href="#5-1-スキルを組み合わせるパターン集">5-1. スキルを組み合わせるパターン集</a></li>
+<li><a href="#5-2-チーム共通のスキル運用ルールを決める">5-2. チーム共通のスキル運用ルールを決める</a></li>
+<li><a href="#5-3-「誰がスキルを管理・更新するか」の役割分担">5-3. 「誰がスキルを管理・更新するか」の役割分担</a></li>
+<li><a href="#5-4-再現性のある使い方をドキュメント化する">5-4. 再現性のある使い方をドキュメント化する</a></li>
+</ol></li>
+<li><a href="#【全員】第6章　実務ユースケース集">【全員】第6章　実務ユースケース集</a>
+<ol>
+<li><a href="#6-1-ドキュメント自動生成（docx・pptxスキル活用）">6-1. ドキュメント自動生成（docx・pptxスキル活用）</a></li>
+<li><a href="#6-2-マルチステップタスクの自動化">6-2. マルチステップタスクの自動化</a></li>
+<li><a href="#6-3-繰り返し作業のclaude-code委譲">6-3. 繰り返し作業のClaude Code委譲</a></li>
+<li><a href="#6-4-ユースケース早見表">6-4. ユースケース早見表</a></li>
+<li><a href="#チームで成功事例を貯めるフォーマット">チームで成功事例を貯めるフォーマット</a></li>
+</ol></li>
+<li><a href="#【全員】第7章　リスクと運用ルール">【全員】第7章　リスクと運用ルール</a>
+<ol>
+<li><a href="#7-1-無限ループを防ぐ考え方">7-1. 無限ループを防ぐ考え方</a></li>
+<li><a href="#7-2-コスト管理（トークン消費をチームで意識する）">7-2. コスト管理（トークン消費をチームで意識する）</a></li>
+<li><a href="#7-3-何をさせてよいか・させてはいけないか">7-3. 何をさせてよいか・させてはいけないか</a></li>
+<li><a href="#7-4-現時点での限界と過信しないための知識">7-4. 現時点での限界と過信しないための知識</a></li>
+</ol></li>
+<li><a href="#ガイド全体のまとめ">ガイド全体のまとめ</a>
+<li><a href="#研修設計の推奨">研修設計の推奨</a>
+<li><a href="#【中級〜上級者向け】第8章　エージェントチームで仕事を分担する">【中級〜上級者向け】第8章　エージェントチームで仕事を分担する</a>
+<ol>
+<li><a href="#8-1-なぜ1つのエージェントでは足りないのか">8-1. なぜ1つのエージェントでは足りないのか</a></li>
+<li><a href="#8-2-エージェントチームの基本構造">8-2. エージェントチームの基本構造</a></li>
+<li><a href="#8-3-エージェントチームが解決する3つの問題">8-3. エージェントチームが解決する3つの問題</a></li>
+<li><a href="#8-4-チームの動作イメージ">8-4. チームの動作イメージ</a></li>
+<li><a href="#8-5-どんな業務にエージェントチームが向いているか">8-5. どんな業務にエージェントチームが向いているか</a></li>
+<li><a href="#8-6-エージェントチーム導入の注意点">8-6. エージェントチーム導入の注意点</a></li>
+</ol></li>
+</ol>
+</nav>
+
+<h2 id="【導入者向け】第0章　展開前の準備">【導入者向け】第0章　展開前の準備</h2>
+
+<ul>
+<li>0-1. この資料の使い方（レベル別の読み進め方）</li>
+<li>0-2. チームへの説明テンプレート（「なぜ今これを学ぶか」）</li>
+<li>0-3. 環境統一チェックリスト（Claude Code導入確認）</li>
+<li>0-4. よくある抵抗と答え方</li>
+
+</ul>
+<hr>
+
+<h2 id="【全員必須】第1章　共通の概念を揃える">【全員必須】第1章　共通の概念を揃える</h2>
+
+<h3 id="1-1-「一問一答」と「エージェント」の違い">1-1. 「一問一答」と「エージェント」の違い</h3>
+
+<p>普段みなさんがClaude.aiのチャット画面で使っているのは<strong>一問一答</strong>の形です。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>あなた：「この文章を要約して」
+Claude：「〇〇です」
+→ 終わり</code></pre></div>
+</div>
+
+<p>これに対してエージェントは、<strong>ゴールを与えると、Claude自身が必要な手順を考えて複数のステップを自律的に実行する</strong>形です。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>あなた：「先月の議事録をまとめてPDFにして」
+Claude：（1）ファイルを探す
+        （2）内容を読む
+        （3）要約する
+        （4）PDFを生成する
+→ 完成したPDFを渡す</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>違いを一言で言うと、<strong>一問一答は「答えを返す」、エージェントは「仕事を片付ける」</strong>です。</p>
+</div>
+
+<hr>
+
+<h3 id="1-2-agenticループとは何か">1-2. Agenticループとは何か</h3>
+
+<p>エージェントが仕事をするとき、内部では以下のループが繰り返されています。</p>
+
+<div class="mermaid-wrapper">
+  <div class="mermaid">
+graph TD
+    Think[&quot;🧠 モデルが考える&lt;br/&gt;「次に何をすべきか？」&quot;]
+    Execute[&quot;⚙️ ハーネスが実行する&lt;br/&gt;（ファイル読む・検索・生成など）&quot;]
+    Judge[&quot;🔍 モデルが結果を見て判断する&lt;br/&gt;「続けるか？終わりか？」&quot;]
+    Done[&quot;✅ 完了&quot;]
+
+    Think -- &quot;ツール呼び出し指示&quot; --&gt; Execute
+    Execute -- &quot;実行結果をモデルに返す&quot; --&gt; Judge
+    Judge -- &quot;まだ続く&quot; --&gt; Think
+    Judge -- &quot;終わり&quot; --&gt; Done
+  </div>
+</div>
+
+<p>Claude Codeを使っているとき、画面上でClaudeがファイルを読んだり、コマンドを実行したりしているのが見えますが、あれがまさにこのループが回っている様子です。</p>
+
+<hr>
+
+<h3 id="1-3-ハーネスの定義：モデルを動かす「車体」の役割">1-3. ハーネスの定義：モデルを動かす「車体」の役割</h3>
+
+<p>よく使われる比喩があります。</p>
+
+<blockquote><strong>モデル＝エンジン、ハーネス＝車体</strong></blockquote>
+
+<p>エンジン単体では車は走りません。タイヤ・ハンドル・燃料タンク・ブレーキなどの「車体」があって初めて目的地に向かえます。</p>
+
+<p>ハーネスが担う役割を具体的に挙げると：</p>
+
+<ul>
+<li>ツールの実行（ファイル操作・検索・ドキュメント生成など）</li>
+<li>会話履歴の管理（モデルに「これまでの流れ」を渡し続ける）</li>
+<li>ループの制御（いつ続けて、いつ止めるか）</li>
+<li>人間への確認（「これ実行していいですか？」を挟む）</li>
+<li>エラー時の対処（失敗したらどうするか）</li>
+
+</ul>
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>モデル（Claude）はあくまで「何をすべきか考える」だけです。実際に手を動かすのはすべてハーネスです。</strong></p>
+</div>
+
+<hr>
+
+<h3 id="1-4-claude-codeがハーネスとしてどう機能するか">1-4. Claude Codeがハーネスとしてどう機能するか</h3>
+
+<p>Claude Codeはハーネスの実装の一つです。インストールするだけで上記の車体がすべて揃った状態になります。</p>
+
+<div class="table-wrapper">
+<table>
+<tr><th>ハーネスの役割</th><th>Claude Codeでの実装</th></tr>
+<tr><td>ツール実行</td><td>bash・ファイル読み書き・検索など</td></tr>
+<tr><td>会話履歴管理</td><td>セッション内の文脈を自動で保持</td></tr>
+<tr><td>ループ制御</td><td>タスク完了を判断して自動停止</td></tr>
+<tr><td>人間への確認</td><td>危険な操作前に承認を求める</td></tr>
+<tr><td>スキル拡張</td><td>SKILL.mdを読んで能力を追加</td></tr>
+</table>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>チームへの伝え方の一言まとめ：</strong> 「Claude Codeを使う＝すでにagenticハーネスの上で仕事している」</p>
+</div>
+
+<hr>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">一問一答 vs エージェント</div>
+<p>一問一答は「答える」、エージェントは「片付ける」。ゴールを与えれば、Claudeが必要な手順を自律的に組み立てて実行する。</p>
+</div>
+<div class="card">
+<div class="card-header reviewer">Agenticループ</div>
+<p>「考える→実行→判断→繰り返す」のサイクル。Claude Codeの画面で見えるステップの連なりが、まさにこのループの可視化。</p>
+</div>
+<div class="card">
+<div class="card-header pm">ハーネス＝車体</div>
+<p>モデルは「考える」だけ。実際の作業（ファイル操作・検索・生成）はすべてハーネスが担う。Claude Codeはこの車体がすぐ使える状態で提供されている。</p>
+</div>
+</div>
+
+<hr>
+
+<h2 id="【全員必須】第2章　ハーネスの構成要素（共通言語）">【全員必須】第2章　ハーネスの構成要素（共通言語）</h2>
+
+<h3 id="2-1-ツール：モデルが外部に指示を出す仕組み">2-1. ツール：モデルが外部に指示を出す仕組み</h3>
+
+<p>モデル（Claude）は<strong>テキストを生成することしかできません</strong>。ファイルを読む・保存する・検索するといった実際の作業は、すべて「ツール」を通じてハーネスに依頼します。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>モデルが出力するテキストの中に
+「このツールをこの引数で実行して」という指示が含まれている
+        ↓
+ハーネスがそれを受け取って実際に実行する
+        ↓
+結果をモデルに返す</code></pre></div>
+</div>
+
+<p>Claude Codeが標準で持っているツールの例：</p>
+
+<div class="table-wrapper">
+<table>
+<tr><th>ツール名</th><th>できること</th></tr>
+<tr><td><code>bash</code></td><td>コマンド実行</td></tr>
+<tr><td><code>str_replace</code></td><td>ファイルの一部を書き換える</td></tr>
+<tr><td><code>create_file</code></td><td>新しいファイルを作る</td></tr>
+<tr><td><code>view</code></td><td>ファイル・ディレクトリの内容を読む</td></tr>
+<tr><td><code>web_search</code></td><td>ウェブ検索</td></tr>
+</table>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>重要な認識：モデルはツールを「呼び出す指示を出す」だけです。実行するのは常にハーネスです。</strong></p>
+</div>
+
+<hr>
+
+<h3 id="2-2-ループ制御：いつ止まるかを決めるロジック">2-2. ループ制御：いつ止まるかを決めるロジック</h3>
+
+<p>agenticループは自動で回り続けるため、「どこで止まるか」の制御が重要です。止まる条件は主に3つあります。</p>
+
+<strong>① モデルが「完了」と判断したとき</strong>
+<p>タスクが終わったとモデル自身が判断し、ツール呼び出しをやめてテキストだけを返す。</p>
+
+<strong>② 上限に達したとき</strong>
+<p>ループ回数・トークン数・時間などの上限をハーネス側で設定しておき、超えたら強制停止する。Claude Codeはこれを自動で管理しています。</p>
+
+<strong>③ 人間が止めたとき</strong>
+<p>後述のHuman-in-the-loopで人間が介入して停止する。</p>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>チームで意識すべきこと：</strong> モデルが「完了」と判断しても、実際には不完全なケースがあります。出力結果を人間が必ず確認する習慣が大切です。</p>
+</div>
+
+<hr>
+
+<h3 id="2-3-コンテキスト管理：会話状態と記憶の扱い方">2-3. コンテキスト管理：会話状態と記憶の扱い方</h3>
+
+<p>モデルには<strong>セッションをまたいだ記憶がありません</strong>。毎回の呼び出しは白紙から始まります。そのため、ハーネスが「これまでの流れ」をモデルに渡し続ける必要があります。これがコンテキスト管理です。</p>
+
+<p>コンテキストに含まれるもの：</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>システムプロンプト（役割・ルールの定義）
+　＋
+会話履歴（これまでのやり取り全体）
+　＋
+ツールの実行結果
+　＋
+スキルの内容（SKILL.mdの中身）
+　＋
+今回のユーザー指示</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>コンテキストウィンドウの上限問題：</strong> 渡せる情報量には上限（コンテキストウィンドウ）があります。長いタスクや大きなファイルを扱うとき、何を渡して何を省くかの判断がハーネスの重要な役割です。</p>
+</div>
+
+<hr>
+
+<h3 id="2-4-human-in-the-loop：人間が介入すべき場所">2-4. Human-in-the-loop：人間が介入すべき場所</h3>
+
+<strong>取り返しのつかない操作の前に人間が確認する仕組み</strong>がHuman-in-the-loopです。
+
+<div class="table-wrapper">
+<table>
+<tr><th>場面</th><th>理由</th></tr>
+<tr><td>ファイルの削除・上書き</td><td>元に戻せない</td></tr>
+<tr><td>外部サービスへの送信</td><td>誤送信のリスク</td></tr>
+<tr><td>大量の繰り返し処理</td><td>コスト・影響範囲が大きい</td></tr>
+<tr><td>想定外の判断をモデルがしたとき</td><td>意図とのズレを修正する</td></tr>
+</table>
+</div>
+
+<p>Claude Codeでは、危険な操作の前に「これを実行していいですか？」と確認を求める動作がデフォルトで組み込まれています。</p>
+
+<hr>
+
+<h3 id="2-5-エラーハンドリングの考え方">2-5. エラーハンドリングの考え方</h3>
+
+<p>ハーネスのエラーハンドリングには3つのパターンがあります。</p>
+
+<strong>① リトライ（やり直す）</strong>
+<p>一時的な失敗であれば、もう一度試みる。</p>
+
+<strong>② 代替手段に切り替える</strong>
+<p>失敗した方法を諦めて、別のアプローチをモデルが考える。</p>
+
+<strong>③ 人間に報告して止まる</strong>
+<p>自分では解決できないと判断し、ユーザーに状況を伝えて停止する。</p>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>チームへの伝え方の一言まとめ：</strong> 「エラーは異常ではなくループの一部。止まったときこそ人間の出番」</p>
+</div>
+
+<hr>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">ツール</div>
+<p>モデルが外部に指示を出す唯一の手段。実行するのはハーネス。</p>
+</div>
+<div class="card">
+<div class="card-header reviewer">ループ制御</div>
+<p>「完了・上限・人間停止」の3条件で止まる。出力結果は必ず人間が確認する。</p>
+</div>
+<div class="card">
+<div class="card-header pm">コンテキスト管理</div>
+<p>毎回の呼び出しに必要な情報を揃える作業。上限があるため、何を渡すかが重要。</p>
+</div>
+<div class="card">
+<div class="card-header reviewer">Human-in-the-loop</div>
+<p>取り返しのつかない操作の前に必ず人間が確認する仕組み。</p>
+</div>
+</div>
+
+<hr>
+
+<h2 id="【初心者向け】第3章　まず触ってみる（ハンズオン）">【初心者向け】第3章　まず触ってみる（ハンズオン）</h2>
+
+<blockquote>この章は手を動かしながら読むことを前提にしています。</blockquote>
+
+<h3 id="3-1-claude-codeの基本操作（インストール〜最初の実行）">3-1. Claude Codeの基本操作（インストール〜最初の実行）</h3>
+
+<strong>インストール（macOS / Linux）：</strong>
+
+<div class="code-block">
+<div class="code-block-header"><span class="code-block-lang">bash</span></div>
+<div class="code-block-content"><pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre></div>
+</div>
+
+<strong>最初の起動：</strong>
+
+<div class="code-block">
+<div class="code-block-header"><span class="code-block-lang">bash</span></div>
+<div class="code-block-content"><pre><code>cd あなたの作業フォルダ
+claude</code></pre></div>
+</div>
+
+<strong>覚えておく基本コマンド：</strong>
+
+<div class="table-wrapper">
+<table>
+<tr><th>コマンド</th><th>何をするか</th></tr>
+<tr><td><code>claude</code></td><td>起動</td></tr>
+<tr><td><code>/help</code></td><td>ヘルプを表示</td></tr>
+<tr><td><code>/config</code></td><td>設定を変更</td></tr>
+<tr><td><code>Ctrl + C</code></td><td>処理を中断</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h3 id="3-2-ループが回っている様子を観察する">3-2. ループが回っている様子を観察する</h3>
+
+<p>以下の指示をClaude Codeに投げてみてください。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>このフォルダの中にあるファイルを一覧にして、
+それぞれの概要を1行で説明してください。</code></pre></div>
+</div>
+
+<p>画面には次のような表示が流れるはずです。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>● ファイル一覧を確認します...    ← ツール呼び出し（viewツール）
+● README.mdを読んでいます...     ← ツール呼び出し（viewツール）
+● main.pyを読んでいます...       ← ツール呼び出し（viewツール）
+                                  ← モデルが判断（十分な情報が揃った）
+以下がファイルの概要です。       ← 最終回答</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>ここで確認してほしいこと：</strong>
+<ul>
+<li>Claudeが「一度に全部答える」のではなく、ステップを踏んで情報を集めていること</li>
+<li>それぞれのステップで何のツールが動いているかが表示されていること</li>
+<li>最後に「もう十分」と判断して止まっていること</p></li>
+</ul>
+</div>
+
+<hr>
+
+<h3 id="3-3-スキルを使ってみる">3-3. スキルを使ってみる</h3>
+
+<p>以下をClaude Codeに投げてみてください。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>チームの自己紹介シートをWordファイルで作ってください。
+項目は「名前・所属・得意なこと・一言」の4つです。</code></pre></div>
+</div>
+
+<p>内部で何が起きているかを追うと：</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>● /mnt/skills/public/docx/SKILL.md を読んでいます...
+  ↑ スキルの手順書を先に確認している
+
+● Word文書の構造を作成しています...
+  ↑ ツール（create_file）を使ってファイル生成
+
+● ファイルを出力ディレクトリに移動しています...
+  ↑ ツール（bash）でファイルを所定の場所へ
+
+完成しました。</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="3-4-「何が自動でされたか」を言語化する習慣">3-4. 「何が自動でされたか」を言語化する習慣</h3>
+
+<p>操作後に以下の問いに答えてみてください。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>① Claudeは何回ツールを呼び出したか？
+② 途中で人間に確認を求めた場面はあったか？
+③ エラーが出た場合、Claudeはどう対処したか？
+④ スキルを読むのはループのどのタイミングだったか？</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>チームでの研修では、この問いをグループで共有する時間を10分設けることを推奨します。</strong> 操作後に「何が起きたか」を言語化することが理解を定着させます。</p>
+</div>
+
+<hr>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">インストール</div>
+<p>1コマンドで完了。<code>claude</code> を打つだけで起動。</p>
+</div>
+<div class="card">
+<div class="card-header reviewer">ループの観察</div>
+<p>画面に表示されるステップの連なりを意識して見る。</p>
+</div>
+<div class="card">
+<div class="card-header pm">スキルの自動読み込み</div>
+<p>Claude Codeが作業前にSKILL.mdを自動で読む。人間の「手順書を確認する」動作と同じ。</p>
+</div>
+</div>
+
+<hr>
+
+<h2 id="【初心者向け】第4章　スキルを理解する">【初心者向け】第4章　スキルを理解する</h2>
+
+<h3 id="4-1-スキルとは何か（ハーネスへの「役割追加」として理解する）">4-1. スキルとは何か（ハーネスへの「役割追加」として理解する）</h3>
+
+<p>スキルは標準のClaude Codeに<strong>オプションパーツを後付けする</strong>イメージです。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>Claude Code（標準）
+　＋ docxスキル　→ Word文書をプロ品質で生成できる
+　＋ pptxスキル　→ スライドを整ったレイアウトで作れる
+　＋ pdfスキル　 → PDFの生成・編集・結合ができる
+　＋ 独自スキル　→ チーム固有の作業を標準化できる</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>重要な点：</strong> スキルは「Claudeの能力そのもの」を変えるわけではありません。「この作業はこう進めるべき」という<strong>手順書と知識をコンテキストに追加する</strong>仕組みです。</p>
+</div>
+
+<hr>
+
+<h3 id="4-2-skill-mdの読み方・構造の把握">4-2. SKILL.mdの読み方・構造の把握</h3>
+
+<p>スキルの実体は<strong>SKILL.mdというMarkdownファイル</strong>です。Claude Codeはタスクを受け取ると、関連するSKILL.mdを自動で探して読み、その内容をコンテキストに取り込んだ上で作業を開始します。</p>
+
+<p>SKILL.mdの典型的な構造：</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>---
+name: スキル名
+description: いつこのスキルを使うかの説明
+---
+
+# 概要
+このスキルで何ができるか
+
+## セットアップ
+必要なライブラリ・ツールの準備手順
+
+## 使い方
+具体的なコード例・コマンド例
+
+## 注意点・落とし穴
+やってはいけないこと、よくあるミス</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="4-3-スキルがハーネスのどの部分を担っているかを意識する">4-3. スキルがハーネスのどの部分を担っているかを意識する</h3>
+
+<div class="table-wrapper">
+<table>
+<tr><th>ハーネスの構成要素</th><th>スキルの役割</th></tr>
+<tr><td>ツール実行</td><td>「このツールをこの順番で使え」と指示する</td></tr>
+<tr><td>ループ制御</td><td>「この手順が終わったら次へ」の流れを定義する</td></tr>
+<tr><td>コンテキスト管理</td><td>SKILL.md自体がコンテキストに追加される</td></tr>
+<tr><td>エラーハンドリング</td><td>「この失敗が起きたらこう対処せよ」を記述する</td></tr>
+<tr><td>Human-in-the-loop</td><td>「ここで必ず確認せよ」を明示できる</td></tr>
+</table>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p>つまりスキルは、<strong>ハーネスの動作をテキストで制御する仕組み</strong>です。</p>
+</div>
+
+<hr>
+
+<h3 id="4-4-使えるスキル一覧と用途の把握">4-4. 使えるスキル一覧と用途の把握</h3>
+
+<div class="table-wrapper">
+<table>
+<tr><th>スキル</th><th>用途</th><th>場所</th></tr>
+<tr><td>docx</td><td>Wordファイルの生成・編集</td><td><code>/mnt/skills/public/docx/</code></td></tr>
+<tr><td>pptx</td><td>PowerPointの生成・編集</td><td><code>/mnt/skills/public/pptx/</code></td></tr>
+<tr><td>pdf</td><td>PDFの生成・編集・結合</td><td><code>/mnt/skills/public/pdf/</code></td></tr>
+<tr><td>xlsx</td><td>Excelファイルの生成・編集</td><td><code>/mnt/skills/public/xlsx/</code></td></tr>
+<tr><td>frontend-design</td><td>高品質なUI・Webページ生成</td><td><code>/mnt/skills/public/frontend-design/</code></td></tr>
+<tr><td>skill-creator</td><td>新しいスキルを作る・改善する</td><td><code>/mnt/skills/examples/skill-creator/</code></td></tr>
+</table>
+</div>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">スキル＝手順書</div>
+<p>実体はSKILL.mdというMarkdownファイル。人間も読める形式。</p>
+</div>
+<div class="card">
+<div class="card-header reviewer">ハーネスの全要素に影響</div>
+<p>ツール実行からエラーハンドリングまで、スキルがテキストで制御する。</p>
+</div>
+<div class="card">
+<div class="card-header pm">まず試すなら</div>
+<p>docx・pptx・xlsxの3つから。チーム独自スキルは知見の標準化に有効。</p>
+</div>
+</div>
+
+<hr>
+
+<h2 id="【中級者向け】第5章　チームで標準化する">【中級者向け】第5章　チームで標準化する</h2>
+
+<h3 id="5-1-スキルを組み合わせるパターン集">5-1. スキルを組み合わせるパターン集</h3>
+
+<strong>パターンA：調査 → ドキュメント化</strong>
+<div class="code-block">
+<div class="code-block-content"><pre><code>「競合他社の料金体系を調べて、比較表をExcelにまとめて」
+  web_search ＋ xlsxスキル</code></pre></div>
+</div>
+
+<strong>パターンB：データ → 報告書 → スライド</strong>
+<div class="code-block">
+<div class="code-block-content"><pre><code>「このExcelの売上データを読んで、
+ Word報告書とPowerPoint要約スライドを両方作って」
+  xlsx ＋ docx ＋ pptxスキル</code></pre></div>
+</div>
+
+<strong>パターンC：複数ファイル → 一本化</strong>
+<div class="code-block">
+<div class="code-block-content"><pre><code>「3つの議事録PDFを読んで、課題一覧をWordにまとめて」
+  pdf ＋ docxスキル</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="5-2-チーム共通のスキル運用ルールを決める">5-2. チーム共通のスキル運用ルールを決める</h3>
+
+<strong>推奨ディレクトリ構成：</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>/mnt/skills/
+  public/      ← 公式スキル（触らない）
+  user/        ← チーム共通スキル（Gitで管理）
+    report/    ← 報告書系
+    meeting/   ← 議事録系
+    data/      ← データ処理系</code></pre></div>
+</div>
+
+<strong>よくある問題と対策：</strong>
+
+<div class="table-wrapper">
+<table>
+<tr><th>問題</th><th>対策</th></tr>
+<tr><td>スキルの置き場所がバラバラ</td><td>ディレクトリ構成をチームで統一する</td></tr>
+<tr><td>スキルが古くなっても誰も更新しない</td><td>スキルごとにオーナーを決める</td></tr>
+<tr><td>スキルの存在をメンバーが知らない</td><td>追加時にSlack等で周知する</td></tr>
+<tr><td>スキルの品質がまちまち</td><td>PRとレビューを必須にする</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h3 id="5-3-「誰がスキルを管理・更新するか」の役割分担">5-3. 「誰がスキルを管理・更新するか」の役割分担</h3>
+
+<div class="table-wrapper">
+<table>
+<tr><th>役割</th><th>担当する内容</th><th>推奨人数</th></tr>
+<tr><td>スキルオーナー</td><td>特定スキルの品質維持・更新</td><td>スキルごとに1名</td></tr>
+<tr><td>スキルレビュアー</td><td>新スキルのレビュー・承認</td><td>2〜3名</td></tr>
+<tr><td>展開担当</td><td>メンバーへの周知・研修</td><td>1名</td></tr>
+<tr><td>フィードバック窓口</td><td>現場からの改善要望の収集</td><td>1名</td></tr>
+</table>
+</div>
+
+<strong>スキルの更新フロー（推奨）：</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>現場から改善要望 → フィードバック窓口が集約 → スキルオーナーが修正
+→ レビュアーが確認・承認 → リポジトリにマージ → チームに周知</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="5-4-再現性のある使い方をドキュメント化する">5-4. 再現性のある使い方をドキュメント化する</h3>
+
+<strong>① プロンプトテンプレート集の例：</strong>
+
+<div class="code-block">
+<div class="code-block-header"><span class="code-block-lang">markdown</span></div>
+<div class="code-block-content"><pre><code>## 議事録→Word変換テンプレート
+
+以下の議事録テキストを読んで、
+社内フォーマット（meetingスキル参照）に従い
+Wordファイルを生成してください。
+
+【議事録テキスト】
+（ここに貼り付け）</code></pre></div>
+</div>
+
+<strong>② ユースケース別対応表：</strong>
+
+<div class="table-wrapper">
+<table>
+<tr><th>業務</th><th>使うスキル</th><th>担当スキルオーナー</th></tr>
+<tr><td>月次報告書作成</td><td>docx + xlsx</td><td>〇〇さん</td></tr>
+<tr><td>提案スライド作成</td><td>pptx</td><td>△△さん</td></tr>
+<tr><td>契約書PDF整理</td><td>pdf</td><td>□□さん</td></tr>
+</table>
+</div>
+
+<strong>③ 失敗事例と対処法の記録：</strong>
+
+<div class="code-block">
+<div class="code-block-header"><span class="code-block-lang">markdown</span></div>
+<div class="code-block-content"><pre><code>## よくある失敗
+
+### 大きいExcelファイルを渡すとコンテキスト上限に当たる
+→ シートを分割して渡す、または必要な列だけ抜き出してから依頼する
+
+### スライドのデザインが崩れる
+→ pptxスキルを使うよう明示的に指示に含める</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>第5章のポイント：</strong> スキルの組み合わせで複雑な業務フローを自動化できる。置き場所・更新ルール・役割分担を事前に決め、プロンプトテンプレートとユースケース対応表を整備する。スキルは暗黙知を形式知に変える道具として機能する。</p>
+</div>
+
+<hr>
+
+<h2 id="【全員】第6章　実務ユースケース集">【全員】第6章　実務ユースケース集</h2>
+
+<h3 id="6-1-ドキュメント自動生成（docx・pptxスキル活用）">6-1. ドキュメント自動生成（docx・pptxスキル活用）</h3>
+
+<strong>ユースケースA：週次報告書の自動作成</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>以下のメモから週次報告書をWordで作成してください。
+社内フォーマット（H1：週次報告、H2：今週の成果・課題・来週の計画）で。
+
+【メモ】
+・Aプロジェクトのレビュー完了
+・Bの仕様書レビューで手戻り発生、来週再提出予定
+・来週はCの設計フェーズ開始</code></pre></div>
+</div>
+
+<strong>ユースケースB：提案スライドの骨格作成</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>以下の提案内容をもとに、経営層向け提案スライドをPowerPointで作成してください。
+スライド数は5〜7枚、構成は「課題→解決策→効果→スケジュール→まとめ」で。
+
+【提案内容】
+（ここに箇条書きで貼り付け）</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="6-2-マルチステップタスクの自動化">6-2. マルチステップタスクの自動化</h3>
+
+<strong>ユースケースC：複数議事録の横断集約</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>/meeting-notes/ フォルダ内のPDFをすべて読んで、
+「未解決の課題」だけを抽出し、
+担当者・期限・ステータスの表形式でWordにまとめてください。</code></pre></div>
+</div>
+
+<strong>ユースケースD：データ集計 → 報告書 → スライドの一気通貫</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>/data/sales_q3.xlsx を読んで、以下を作成してください。
+① 月別売上推移の集計表（Excel）
+② 経営報告用Word文書（概要・分析・所見）
+③ 役員会議用PowerPoint（5枚以内）</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="6-3-繰り返し作業のclaude-code委譲">6-3. 繰り返し作業のClaude Code委譲</h3>
+
+<strong>ユースケースE：採用書類の整形</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>添付の履歴書PDFを読んで、
+社内評価シートフォーマット（docxスキル参照）に
+情報を転記したWordファイルを作成してください。</code></pre></div>
+</div>
+
+<hr>
+
+<h3 id="6-4-ユースケース早見表">6-4. ユースケース早見表</h3>
+
+<div class="table-wrapper">
+<table>
+<tr><th>業務</th><th>使うスキル</th><th>指示のポイント</th><th>時間削減の目安</th></tr>
+<tr><td>週次報告書</td><td>docx</td><td>メモを箇条書きで渡す</td><td>45分→10分</td></tr>
+<tr><td>提案スライド骨格</td><td>pptx</td><td>構成と枚数を指定する</td><td>60分→15分</td></tr>
+<tr><td>議事録横断集約</td><td>pdf＋docx</td><td>フォルダごと渡す</td><td>2時間→20分</td></tr>
+<tr><td>データ→報告書</td><td>xlsx＋docx＋pptx</td><td>出力物を列挙する</td><td>3時間→30分</td></tr>
+<tr><td>書類フォーマット統一</td><td>docx</td><td>テンプレートを渡す</td><td>30分→5分</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h3 id="チームで成功事例を貯めるフォーマット">チームで成功事例を貯めるフォーマット</h3>
+
+<div class="code-block">
+<div class="code-block-header"><span class="code-block-lang">markdown</span></div>
+<div class="code-block-content"><pre><code>## ユースケース名：（例）議事録横断集約
+
+### 担当者
+〇〇（初回実施：20XX年X月）
+
+### 指示文（プロンプトテンプレート）
+（実際に使った指示文をそのまま貼る）
+
+### 使ったスキル
+（例）pdf + docx
+
+### 結果
+・所要時間：XX分（従来：約XX時間）
+・品質：（気になった点があれば記載）
+
+### 注意点
+（次の人が詰まらないよう、ハマりポイントを書く）</code></pre></div>
+</div>
+
+<hr>
+
+<h2 id="【全員】第7章　リスクと運用ルール">【全員】第7章　リスクと運用ルール</h2>
+
+<h3 id="7-1-無限ループを防ぐ考え方">7-1. 無限ループを防ぐ考え方</h3>
+
+<strong>原因A：タスクの完了条件が曖昧</strong>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>❌ 「レポートをいい感じにまとめて」
+✅ 「レポートをA4・2枚以内・箇条書きでまとめて」</code></pre></div>
+</div>
+
+<strong>チームで決めるべきガイドライン：</strong>
+
+<div class="table-wrapper">
+<table>
+<tr><th>対策</th><th>内容</th></tr>
+<tr><td>指示には完了条件を必ず含める</td><td>枚数・文字数・項目数などで明示する</td></tr>
+<tr><td>異変を感じたら即 <code>Ctrl+C</code></td><td>長時間動き続けているときは迷わず止める</td></tr>
+<tr><td>上限を意識する</td><td>Claude Codeには内部的なループ上限があるが、過信しない</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h3 id="7-2-コスト管理（トークン消費をチームで意識する）">7-2. コスト管理（トークン消費をチームで意識する）</h3>
+
+<strong>コストが膨らみやすいパターン：</strong>
+
+<div class="proscons-grid">
+<div class="proscons-card pros">
+<div class="proscons-header pros">Pros</div>
+<ul>
+<li>必要な列・シートだけを指定して渡す</li>
+<li>タスクが変わったら新しいセッションを始める</li>
+<li>指示を事前に整理してから投げる</li>
+</ul>
+</div>
+<div class="proscons-card cons">
+<div class="proscons-header cons">Cons</div>
+<ul>
+<li>1万行のExcelをそのまま読ませる</li>
+<li>一つのセッションで何十回もやり取りする</li>
+<li>指示が曖昧なまま「違う・やり直して」を繰り返す</li>
+</ul>
+</div>
+</div>
+
+<div class="table-wrapper">
+<table>
+<tr><th>項目</th><th>推奨</th></tr>
+<tr><td>月次でコスト確認する担当を決める</td><td>1名が請求状況を把握する</td></tr>
+<tr><td>大きなファイルは前処理してから渡す</td><td>必要な部分だけに絞る</td></tr>
+<tr><td>指示文はプロンプトテンプレートを使う</td><td>試行錯誤のトークン消費を減らす</td></tr>
+</table>
+</div>
+
+<hr>
+
+<h3 id="7-3-何をさせてよいか・させてはいけないか">7-3. 何をさせてよいか・させてはいけないか</h3>
+
+<strong>操作の安全レベル分類：</strong>
+
+<div class="table-wrapper">
+<table>
+<tr><th>レベル</th><th>操作の例</th><th>運用方針</th></tr>
+<tr><td>自由に使ってよい</td><td>ファイル読み取り・ドキュメント生成</td><td>承認不要</td></tr>
+<tr><td>確認してから使う</td><td>既存ファイルの上書き・大量処理</td><td>実行前に内容確認</td></tr>
+<tr><td>原則使わない</td><td>本番環境への書き込み・外部サービスへの送信</td><td>責任者の承認必須</td></tr>
+</table>
+</div>
+
+<strong>特に注意が必要な場面：</strong>
+
+<ul>
+<li>既存ファイルの上書き → 作業前に必ずバックアップを取る</li>
+<li>機密情報を含むファイル → マスキングしてから渡す・社内ポリシーを確認する</li>
+<li>生成物の無確認での使用 → 数字・固有名詞・日付は必ず人間がレビューする</li>
+
+</ul>
+<hr>
+
+<h3 id="7-4-現時点での限界と過信しないための知識">7-4. 現時点での限界と過信しないための知識</h3>
+
+<div class="table-wrapper">
+<table>
+<tr><th>限界</th><th>対策</th></tr>
+<tr><td>長期記憶がない</td><td>重要な決定・経緯はドキュメントに残す</td></tr>
+<tr><td>最新情報を持っていない</td><td>web_searchツールを使うか、人間が情報を渡す</td></tr>
+<tr><td>数値計算の正確性は保証されない</td><td>数値を含む成果物は必ず人間が検算する</td></tr>
+<tr><td>意図の読み違いが起きる</td><td>「何を・どの形式で・どの品質で」を明記する</td></tr>
+<tr><td>コンテキストウィンドウの上限</td><td>大きなタスクは分割して渡す</td></tr>
+</table>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>チームへの最終メッセージ：</strong> 完璧に使いこなす必要はありません。<strong>小さく始めて、成功事例を積み重ねていくこと</strong>が、チーム全体の底上げにつながります。3つの実践を意識しましょう。
+<p>① ループが何をしているか観察できる</p>
+<p>② スキルを組み合わせて日常業務を自動化できる</p>
+③ リスクを知った上で人間が最終確認する</p>
+</div>
+
+<hr>
+
+<h2 id="ガイド全体のまとめ">ガイド全体のまとめ</h2>
+
+<div class="table-wrapper">
+<table>
+<tr><th>章</th><th>テーマ</th><th>対象</th></tr>
+<tr><td>第1章</td><td>概念の共通理解</td><td>全員</td></tr>
+<tr><td>第2章</td><td>ハーネスの構成要素</td><td>全員</td></tr>
+<tr><td>第3章</td><td>Claude Codeハンズオン</td><td>初心者中心</td></tr>
+<tr><td>第4章</td><td>スキルの理解と活用</td><td>初心者中心</td></tr>
+<tr><td>第5章</td><td>チームでの標準化</td><td>中級者中心</td></tr>
+<tr><td>第6章</td><td>実務ユースケース集</td><td>全員</td></tr>
+<tr><td>第7章</td><td>リスクと運用ルール</td><td>全員</td></tr>
+<tr><td>第8章</td><td>エージェントチーム</td><td>中級〜上級者</td></tr>
+</table>
+</div>
+
+<h2 id="研修設計の推奨">研修設計の推奨</h2>
+
+<div class="table-wrapper">
+<table>
+<tr><th>フェーズ</th><th>対象</th><th>内容</th><th>目安時間</th></tr>
+<tr><td>第1回</td><td>全員</td><td>第1〜2章（概念統一）</td><td>2時間</td></tr>
+<tr><td>第2回</td><td>初心者中心</td><td>第3〜4章（ハンズオン）</td><td>2時間</td></tr>
+<tr><td>第3回</td><td>中級者中心</td><td>第5〜6章（標準化）</td><td>2時間</td></tr>
+<tr><td>随時</td><td>全員</td><td>第7章（ルール整備）</td><td>適宜</td></tr>
+<tr><td>第4回</td><td>中級〜上級者</td><td>第8章（エージェントチーム）</td><td>2時間</td></tr>
+</table>
+</div>
+
+<hr>
+
+<em>このガイドはチームの成長に合わせて更新し続けてください。</em>
+<em>6章のユースケース・5章の運用ルール・7章の限界情報は、使い続けるほど実態に合った内容に育っていきます。</em>
+
+<hr>
+
+<h2 id="【中級〜上級者向け】第8章　エージェントチームで仕事を分担する">【中級〜上級者向け】第8章　エージェントチームで仕事を分担する</h2>
+
+<h3 id="8-1-なぜ1つのエージェントでは足りないのか">8-1. なぜ1つのエージェントでは足りないのか</h3>
+
+<p>これまでの章では、Claude Code1つが順番にタスクをこなす構成を扱ってきました。しかし業務が複雑になると、<strong>1つのエージェントに何でもやらせることの限界</strong>が見えてきます。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>「競合調査をして、報告書を書いて、品質チェックして、スライドにまとめて」
+
+→ 1エージェントでやると：
+  ・コンテキストが膨らみすぎて後半の精度が落ちる
+  ・調査と執筆と品質チェックを同じ判断基準でやるため
+    客観性が失われる
+  ・どこかで失敗すると全部やり直しになる</code></pre></div>
+</div>
+
+<p>これを解決するのが<strong>エージェントチーム</strong>です。Claude Codeには、複数のエージェントをチームとして束ねる機能が組み込まれています。</p>
+
+<hr>
+
+<h3 id="8-2-エージェントチームの基本構造">8-2. エージェントチームの基本構造</h3>
+
+<p>役割を分けた複数のエージェントが、<strong>チームリード（指揮役）の制御のもとで協調して動く</strong>構成です。</p>
+
+<div class="mermaid-wrapper">
+  <div class="mermaid">
+graph TD
+    Lead[&quot;🎯 チームリード&lt;br/&gt;タスクを分解・割り振り・統合する&quot;]
+    Research[&quot;リサーチ担当&lt;br/&gt;情報収集&quot;]
+    Writer[&quot;ライター担当&lt;br/&gt;文書生成&quot;]
+    Reviewer[&quot;レビュアー担当&lt;br/&gt;品質チェック&quot;]
+
+    Lead --&gt; Research
+    Lead --&gt; Writer
+    Lead --&gt; Reviewer
+  </div>
+</div>
+
+<div class="table-wrapper">
+<table>
+<tr><th>役割</th><th>担当</th><th>特徴</th></tr>
+<tr><td>チームリード</td><td>全体の進行管理</td><td>タスクリストを作り、各メンバーに割り振り、結果を統合する</td></tr>
+<tr><td>チームメンバー</td><td>特定タスクの実行</td><td>専門的な役割に集中し、コンテキストがシンプルに保たれる</td></tr>
+</table>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>ポイント：</strong> チームリードが全体を俯瞰し、各メンバーは自分の担当に集中する。人間のチームと同じ分業の原理です。</p>
+</div>
+
+<hr>
+
+<h3 id="8-3-エージェントチームが解決する3つの問題">8-3. エージェントチームが解決する3つの問題</h3>
+
+<div class="card-grid">
+<div class="card">
+<div class="card-header pm">コンテキストの分離</div>
+<p>1つのエージェントに全部やらせるとコンテキストが膨らんで精度が下がる。チームにすると、各メンバーが自分の担当分だけに集中でき、精度が維持される。</p>
+</div>
+<div class="card">
+<div class="card-header reviewer">客観性の確保</div>
+<p>書いた本人がチェックしても見落としやすい。別のエージェントがレビューすることで、客観的な品質チェックが可能になる。</p>
+</div>
+<div class="card">
+<div class="card-header pm">障害の局所化</div>
+<p>1エージェントで途中失敗すると全部やり直し。チームなら失敗したメンバーの担当だけやり直せばよい。</p>
+</div>
+</div>
+
+<hr>
+
+<h3 id="8-4-チームの動作イメージ">8-4. チームの動作イメージ</h3>
+
+<p>実際のエージェントチームがどう動くかを見てみましょう。</p>
+
+<strong>指示例：</strong> 「個人情報保護法の改正点をまとめた報告書を作って」
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>チームリード：タスクを分解して各メンバーに割り振る
+
+  リサーチ担当 → 公式サイトから情報収集
+                  情報源・取得日付きの調査結果を出力
+       ↓ 結果をチームリードに報告
+
+  ライター担当 → 調査結果を受け取って報告書を生成
+       ↓ 結果をチームリードに報告
+
+  レビュアー担当 → 報告書を受け取って品質チェック
+                    論理整合性・事実確認・読みやすさを確認
+       ↓ 結果をチームリードに報告
+
+チームリード：
+  → チェック結果を確認
+  → 問題があればライター担当に差し戻し
+  → 問題なければユーザーに完成物を渡す</code></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>各メンバーは自分の仕事が終わるとチームリードに報告し、次の指示を待ちます。</strong> チームリードがタスクリストで全体の進捗を管理し、必要に応じてメンバーに追加指示を出します。</p>
+</div>
+
+<hr>
+
+<h3 id="8-5-どんな業務にエージェントチームが向いているか">8-5. どんな業務にエージェントチームが向いているか</h3>
+
+<div class="table-wrapper">
+<table>
+<tr><th>業務パターン</th><th>チーム構成例</th><th>なぜチームが有効か</th></tr>
+<tr><td>調査→報告書→レビュー</td><td>リサーチ＋ライター＋レビュアー</td><td>調査と執筆とチェックを分離できる</td></tr>
+<tr><td>複数データソースの統合</td><td>データ担当A＋B＋統合担当</td><td>並行して情報収集、最後に統合</td></tr>
+<tr><td>翻訳＋ローカライズ</td><td>翻訳担当＋文化調整担当＋校正担当</td><td>言語変換と文脈調整を分離できる</td></tr>
+<tr><td>大規模コードレビュー</td><td>セキュリティ＋パフォーマンス＋可読性</td><td>観点ごとに専門的にチェック</td></tr>
+</table>
+</div>
+
+<strong>逆にチームが不要な場面：</strong>
+
+<ul>
+<li>単純なファイル生成（1スキルで完結する作業）</li>
+<li>短い文章の要約や翻訳</li>
+<li>明確な手順が決まっている定型作業</li>
+
+</ul>
+<hr>
+
+<h3 id="8-6-エージェントチーム導入の注意点">8-6. エージェントチーム導入の注意点</h3>
+
+<strong>注意点A：タスクの分解が曖昧だと全体が崩れる</strong>
+
+<p>チームリードへの指示は、単体エージェントへの指示より<strong>さらに明確</strong>である必要があります。「いい感じにやって」ではなく、<strong>期待する成果物とその品質基準</strong>を明示しましょう。</p>
+
+<div class="code-block">
+<div class="code-block-content"><pre><code>❌ 「報告書を作って」
+✅ 「以下の条件で報告書を作って。
+    ・公式サイトのみを情報源とする
+    ・A4で3枚以内
+    ・数値と固有名詞の正確性をレビューで確認する」</code></pre></div>
+</div>
+
+<strong>注意点B：コストが単体エージェントより増える</strong>
+
+<p>エージェントの数だけトークンを消費します。チーム全体のコストは、メンバー数×各メンバーの作業量で決まります。<strong>チームにする価値がある複雑さかどうか</strong>を事前に判断しましょう。</p>
+
+<strong>注意点C：まずは2人チームから始める</strong>
+
+<p>最初から大人数のチームを組む必要はありません。「書く人＋チェックする人」の2人チームから始めて、効果を実感してから段階的にメンバーを増やすのが現実的です。</p>
+
+<div class="insight">
+<div class="insight-label">Insight</div>
+<p><strong>第8章のポイント：</strong> 複雑な業務は役割を分けたエージェントチームで対処する。チームリードがタスクを分解・割り振り・統合し、各メンバーは専門的な担当に集中する。導入時はタスク分解の明確さ・コスト意識・段階的な拡大を意識する。</p>
+</div>
+</div>
+</article>
+
+<footer>
+  <div class="container">
+    <p>Generated by md2html / 2026-02-28</p>
+  </div>
+</footer>
+
+</body>
+</html>
